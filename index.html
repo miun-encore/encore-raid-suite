@@ -63,8 +63,39 @@ main{padding:1rem 44px 1rem 1rem;width:100%;max-width:1600px;margin:0 auto;overf
 .crossheal-groups .cg-row{margin-left:8px;}
 .crossheal-groups .cg-row b{color:var(--text);font-weight:600;margin-right:4px;}
 .crossheal-groups .cg-move{color:#ffb347;}
-/* Shared raid header (above the tabs) */
-.raid-head{margin:0 0 .9rem;padding-bottom:.8rem;border-bottom:1px solid var(--border);}
+/* Shared raid header (above the tabs) — lean by default: title + stats on one
+   line, wings and tanks below, composition / gear behind toggles. */
+.raid-head{margin:0 0 .7rem;padding-bottom:.6rem;border-bottom:1px solid var(--border);}
+.raid-head .rh-top{display:flex;align-items:baseline;gap:6px 18px;flex-wrap:wrap;}
+.raid-head .report-title{margin-bottom:0;}
+.raid-head .report-meta{margin-bottom:0;gap:4px 12px;}
+.raid-head .run-splits{margin:3px 0 0;}
+.raid-head #tanks-list{margin-top:1px;line-height:1.6;}
+.raid-head #tanks-list:empty{display:none;}
+.rh-ctrl{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;}
+.raw-bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:2.5rem 0 1rem;padding-top:.9rem;border-top:1px solid var(--border);font-size:11px;color:var(--muted);}
+.raw-lbl{font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:10px;}
+.raw-btn{background:transparent;border:1px solid var(--border2,var(--border));color:var(--text);font:600 11px Inter,sans-serif;padding:5px 11px;border-radius:6px;cursor:pointer;}
+.raw-btn:hover{border-color:var(--gold);}
+.raw-btn.primary{background:var(--gold);color:#0d0e11;border-color:var(--gold);}
+.raw-msg{font-size:11px;}
+.sec-nav{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 14px;padding:8px 0 10px;border-bottom:1px solid var(--border);}
+.sec-nav:empty{display:none;}
+.sec-chip{background:var(--panel,#16171c);border:1px solid var(--border);color:var(--muted);font:600 11px Inter,sans-serif;padding:4px 10px;border-radius:6px;cursor:pointer;white-space:nowrap;}
+.sec-chip:hover{color:var(--text);border-color:#5a5f73;}
+.sec-chip.on{color:#0d0e11;background:var(--gold);border-color:var(--gold);}
+.sec-chip.all{font-weight:700;}
+.sec-hidden{display:none!important;}
+.rh-tog{background:transparent;border:1px solid var(--border);color:var(--muted);font:600 10.5px Inter,sans-serif;padding:3px 9px;border-radius:999px;cursor:pointer;}
+.rh-tog:hover{color:var(--text);border-color:var(--gold);}
+.rh-tog.on{color:#0d0e11;background:var(--gold);border-color:var(--gold);}
+.rh-chips{display:inline-flex;flex-wrap:wrap;gap:4px 10px;font-size:11px;margin-left:6px;}
+.rh-chips span{white-space:nowrap;font-weight:600;}
+.rh-chips span b{color:var(--muted);font-weight:500;margin-left:3px;}
+.raid-head:not(.show-comp) #raid-roster{display:none;}
+.raid-head.show-comp .rh-chips{display:none;}
+.raid-head:not(.show-gear) #raid-roster .tal,.raid-head:not(.show-gear) #raid-roster .flask-pill,.raid-head:not(.show-gear) #raid-roster .gear-btn{display:none!important;}
+#report-meta,#dps-report-meta{display:none!important;}
 .raid-roster{font-size:11px;color:var(--muted);line-height:1.85;margin-top:4px;}
 .rr-row{display:block;}
 .rr-row>span{margin-right:10px;white-space:nowrap;}
@@ -493,7 +524,7 @@ select{background-image:linear-gradient(45deg,transparent 50%,#8890a8 50%),linea
 
 <!-- Top bar -->
 <div class="topbar">
-  <div class="logo"><img class="suite-logo" alt="Encore" src="data:image/png;base64,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"/><span class="suite-name">Encore Raid Suite</span><span id="logo-text">Miun's Healer Spread - Effective Playstyle Analysis</span> <span id="app-version" style="color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:400;letter-spacing:0;">v5.0</span></div>
+  <div class="logo"><img class="suite-logo" alt="Encore" src="data:image/png;base64,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"/><span class="suite-name">Encore Raid Suite</span><span id="logo-text">Miun's Healer Spread - Effective Playstyle Analysis</span> <span id="app-version" style="color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:400;letter-spacing:0;">v6.0</span></div>
   <div class="url-row" id="url-row-healers">
     <input class="url-input" id="url-in" type="text" placeholder="WarcraftLogs URL or report code…" value="LWy73jdMTK2Z8nJN"/>
     <button class="btn-gold" id="load-btn" onclick="loadReport()">Load</button>
@@ -593,10 +624,17 @@ document.addEventListener("click",e=>{
 
 <main>
   <div class="report-head raid-head" id="raid-head" style="display:none">
-    <div class="report-title" id="raid-title"></div>
-    <div class="report-meta" id="raid-meta"></div>
-    <div class="raid-roster" id="raid-roster"></div>
+    <div class="rh-top">
+      <div class="report-title" id="raid-title"></div>
+      <div class="report-meta" id="raid-meta"></div>
+    </div>
     <div class="healer-list" id="tanks-list"></div>
+    <div class="rh-ctrl">
+      <button type="button" class="rh-tog" id="rh-tog-comp" onclick="toggleRaidHead('comp')" title="Show every raider, grouped by class">▸ Composition</button>
+      <button type="button" class="rh-tog" id="rh-tog-gear" onclick="toggleRaidHead('gear')" title="Show talents, flask and gear / enchant check per raider">▸ Talents, flasks &amp; gear</button>
+      <span class="rh-chips" id="raid-comp-summary"></span>
+    </div>
+    <div class="raid-roster" id="raid-roster"></div>
   </div>
   <div class="tab-bar" id="tab-bar">
     <button type="button" class="tab-btn active" data-tab="healers" onclick="switchTab('healers')">🩹 Miun's Healer Spread - Effective Playstyle Analysis</button>
@@ -631,7 +669,8 @@ document.addEventListener("click",e=>{
       <div class="legend-hint">Hover for labels · click to expand · click again to collapse</div>
     </div>
 
-    <div class="row-label dps-row-flex">Attention Spread and True Activity
+    <div class="sec-nav" id="sec-nav-healers" data-tab="healers"></div>
+    <div class="row-label dps-row-flex" id="attention-label">Attention Spread and True Activity
       <span class="row-sub">If your name is to the left, you can afford to be a bit more active. The higher you are on the Y axis, the more people you're actively healing back-to-back — a reminder to stay on your main assignment when it's healthy, but always fish for opportunities to save someone dipping below 50%. X: nCPM (normalized casts per minute, cost-weighted) · Y: N<sub>eff</sub>, the effective number of players a healer spread their healing across — low means focused on one or two targets, high means healing was spread evenly around the raid. Hover a point for True Activity: the % of the fight actually spent casting, independent of how that time was spread.</span>
       <span class="view-toggle dps-util-toggle ncpm-toggle" title="nCPM = normalized casts per minute (pace) · nCasts = total normalized casts over the scope (pace × time)">
         <button type="button" data-nc="ncpm" class="active" onclick="setNcpmMode('ncpm')">nCPM</button><button type="button" data-nc="ncasts" onclick="setNcpmMode('ncasts')">nCasts</button>
@@ -799,8 +838,11 @@ document.addEventListener("click",e=>{
 
     <!-- Row 3a: Total Casts -->
     <div id="section-casts" style="display:none;margin-top:1.5rem;">
-      <div class="row-label">Total Casts
-        <span class="row-sub">Every healing spell and dispel cast — the same casts behind nCPM, counted one by one (no cast-time weighting). Label: casts · casts per minute. Hover for the per-spell breakdown.</span>
+      <div class="row-label dps-row-flex">Total Casts
+        <span class="row-sub">Every healing spell and dispel cast — the same casts behind nCPM. <b>Casts</b>: counted one by one. <b>nCasts</b>: normalized casts (nCPM × time) — each cast weighted by its cast time in GCDs, so a 3s Greater Heal counts 2 and a 1.5s Flash Heal 1. Hover for the per-spell breakdown.</span>
+        <span class="view-toggle dps-util-toggle casts-toggle" title="Casts = every cast counts 1 · nCasts = normalized casts, nCPM × time (cast time ÷ GCD per cast)">
+          <button type="button" data-cm="casts" class="active" onclick="setCastsMode('casts')">Casts</button><button type="button" data-cm="ncasts" onclick="setCastsMode('ncasts')">nCasts</button>
+        </span>
       </div>
       <div class="panels">
         <div class="panel" style="cursor:default;">
@@ -1102,6 +1144,31 @@ document.addEventListener("click",e=>{
       </div>
     </div>
 
+    <!-- ── Priest cross-renews heatmap ── -->
+    <div id="section-crossrenew" style="display:none;margin-top:1.5rem;">
+      <div class="row-label dps-row-flex">Priest Cross-Renews
+        <span class="row-sub">Renews per priest (rows, G2 → G8 priest) on each group (columns). <b style="color:#52d273">Green</b> = own group, <b style="color:#ff5c5c">red</b> = cross-renews (darker = more). Tanks don't count as cross. G3–G6 order is by priest name — see the guide.</span>
+        <span class="view-toggle dps-util-toggle crossrenew-toggle" title="Renews = Renew casts (applied or refreshed) · Healing = effective Renew healing">
+          <button type="button" data-cr="n" class="active" onclick="setCrossRenewMode('n')">Renews</button><button type="button" data-cr="eff" onclick="setCrossRenewMode('eff')">Healing</button>
+        </span>
+      </div>
+      <div class="panels">
+        <div class="panel" style="cursor:default;">
+          <div class="panel-title" style="margin-bottom:.5rem;">Bosses + Trash</div>
+          <div class="bottom-chart-wrap"><canvas id="chart-crossrenew-all"></canvas></div>
+        </div>
+        <div class="panel" style="cursor:default;">
+          <div class="panel-title" id="boss-title-crossrenew" style="margin-bottom:.5rem;">Bosses Only</div>
+          <div class="bottom-chart-wrap"><canvas id="chart-crossrenew-boss"></canvas></div>
+          <div class="boss-btns" id="crossrenew-boss-sel"></div>
+        </div>
+        <div class="panel" style="cursor:default;">
+          <div class="panel-title" style="margin-bottom:.5rem;">Trash Only</div>
+          <div class="bottom-chart-wrap"><canvas id="chart-crossrenew-trash"></canvas></div>
+        </div>
+      </div>
+    </div>
+
     <!-- ── Healer cooldowns (Inner Focus, Divine Favor, Swiftmend …) / Fear Ward ── -->
     <div id="section-healcd" style="display:none;margin-top:1.5rem;">
       <div class="row-label dps-row-flex">Healer Cooldowns
@@ -1169,10 +1236,28 @@ document.addEventListener("click",e=>{
         <div class="report-meta" id="dps-report-meta"></div>
         <div class="healer-list" id="dps-warrior-list"></div>
       </div>
+      <div class="sec-nav" id="sec-nav-dps" data-tab="dps"></div>
       <div id="dps-sections"></div>
     </div>
   </div>
+  <div class="raw-bar" id="raw-bar">
+    <span class="raw-lbl" title="Move a loaded log to a newer version of the tool without fetching everything again">Raw data</span>
+    <button type="button" class="raw-btn" id="raw-copy-btn" onclick="copyRawData()" title="Copy every WarcraftLogs response loaded so far as one compressed string (no API key inside)">📋 Copy raw data</button>
+    <button type="button" class="raw-btn" onclick="openRawPaste()" title="Paste a raw-data string copied from any version of the tool: everything it holds loads instantly, anything newer this version needs is fetched">📥 Paste raw data</button>
+    <span class="raw-msg" id="raw-msg"></span>
+  </div>
 </main>
+<div class="how-overlay" id="raw-overlay" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="how-box" style="max-width:640px;">
+    <div class="how-title" style="font-family:'Cinzel',serif;color:var(--gold);font-weight:600;margin-bottom:.5rem;">Paste raw data</div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.6;margin-bottom:.6rem;">Paste the string from <b>Copy raw data</b> (any version). The log loads from it instantly; anything this version needs that the string doesn't have is fetched with your API key.</div>
+    <textarea id="raw-in" spellcheck="false" style="width:100%;height:140px;background:var(--bg2,#0d0e11);color:var(--text);border:1px solid var(--border2);border-radius:6px;font:11px 'JetBrains Mono',monospace;padding:8px;resize:vertical;" placeholder="ENCRAW1:…"></textarea>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:.7rem;">
+      <button type="button" class="raw-btn" onclick="document.getElementById('raw-overlay').classList.remove('show')">Cancel</button>
+      <button type="button" class="raw-btn primary" onclick="loadRawData()">Load</button>
+    </div>
+  </div>
+</div>
 
 <script>
 const V1="https://www.warcraftlogs.com/v1";
@@ -1612,7 +1697,7 @@ function zoneForY(y){
 // Bump this whenever SPELL_DB or core stat logic changes, and add a line
 // below, so we can tell at a glance which build a screenshot/bug report
 // came from.
-const APP_VERSION="5.0";
+const APP_VERSION="6.0";
 document.addEventListener("DOMContentLoaded",()=>{const v=document.getElementById("app-version");if(v)v.textContent="v"+APP_VERSION;});
 if(document.readyState!=="loading"){const v=document.getElementById("app-version");if(v)v.textContent="v"+APP_VERSION;}
 // v1.0 (this update):
@@ -2086,14 +2171,22 @@ function v1Schedule(fn){
 // Cached JSON is treated as read-only by every consumer in this file.
 const v1Cache=new Map();
 let v1CacheHits=0;
-function clearV1Cache(){v1Cache.clear();v1CacheHits=0;}
+// Raw-data transfer: responses pasted in from another copy of the tool
+// (see "Copy raw data") seed the cache after every clear, so the new version's
+// loaders find them and only fetch what's still missing.
+let rawSeed=null;
+function clearV1Cache(){v1Cache.clear();v1CacheHits=0;if(rawSeed)rawSeed.forEach((v,k)=>v1Cache.set(k,Promise.resolve(v)));}
+// Cache keys leave the API key out, so raw data copied by one person / key is
+// reusable by anyone (and the key never ends up in the copied string).
+function v1Key(path,params){const q={...params};delete q.api_key;return`${V1}${path}?${new URLSearchParams(q)}`;}
 function v1(path,params={}){
+  const key=v1Key(path,params);
   params.api_key=getApiKey();
   const url=`${V1}${path}?${new URLSearchParams(params)}`;
-  if(v1Cache.has(url)){v1CacheHits++;renderApiMeter();return v1Cache.get(url);}
+  if(v1Cache.has(key)){v1CacheHits++;renderApiMeter();return v1Cache.get(key);}
   const p=v1Fetch(url);
-  v1Cache.set(url,p);
-  p.catch(()=>{if(v1Cache.get(url)===p)v1Cache.delete(url);});
+  v1Cache.set(key,p);
+  p.catch(()=>{if(v1Cache.get(key)===p)v1Cache.delete(key);});
   return p;
 }
 function v1Fetch(url){
@@ -2178,7 +2271,7 @@ async function v1PagedLoop(pathFn,params,kind){
   try{
     for(let guard=0;guard<V1_MAX_PAGES;guard++){
       const path=pathFn(start),q={...params,start};
-      const cached=v1Cache.has(`${V1}${path}?${new URLSearchParams({...q,api_key:getApiKey()})}`);
+      const cached=v1Cache.has(v1Key(path,q));
       if(guard===0&&!cached){
         const key=kind+"|"+(params.filter||"")+"|"+(params.by||"")+"|"+(params.sourceclass||"");
         kd=v1Kinds[key]||(v1Kinds[key]={seen:0,extra:0,pend:0});kd.pend++;pend=true;
@@ -2550,6 +2643,7 @@ function syncLinkedBossSelectors(value){
     ["trinkets-boss-sel",()=>onTrinketsBossChange()],
     ["healcd-boss-sel",()=>renderHealCds()],
     ["crossheal-boss-sel",()=>renderCrossheal()],
+    ["crossrenew-boss-sel",()=>renderCrossRenew()],
     ["bfd-boss-sel",()=>renderBFDCritScore()],
     ["utildmg-boss-sel",()=>renderUtilDmg()],
     ["consum-boss-sel",()=>{if(typeof renderConsumables==="function")renderConsumables();}],
@@ -3975,7 +4069,7 @@ async function applyImportedData(data){
     renderBFDCritScore(); // no-ops quietly if this snapshot predates biggestCast being saved
     renderUtilDmg();      // same for utility damage
     if(cachedReport&&cachedReport.biggestCast){renderBossButtons("bfd-boss-sel",cachedReport.bossFights||[],renderBFDCritScore,true);renderBossButtons("utildmg-boss-sel",cachedReport.bossFights||[],renderUtilDmg,true);}
-    if(crossheal&&cachedReport){cachedReport.crossheal=crossheal;renderBossButtons("crossheal-boss-sel",cachedReport.bossFights||[],renderCrossheal,true);renderCrossheal();}
+    if(crossheal&&cachedReport){cachedReport.crossheal=crossheal;renderBossButtons("crossheal-boss-sel",cachedReport.bossFights||[],renderCrossheal,true);renderBossButtons("crossrenew-boss-sel",cachedReport.bossFights||[],renderCrossRenew,true);renderCrossheal();}
     if(healCdByFight&&cachedReport){
       cachedReport.healCdByFight=healCdByFight;
       cachedReport.illumByFight=illumByFight||null;
@@ -7765,6 +7859,7 @@ function redrawChartForExport(canvasId,forceLabels){
   }
   if(canvasId.startsWith("chart-healcd-")){renderHealCds();return;}
   if(canvasId.startsWith("chart-crossheal-")){renderCrossheal();return;}
+  if(canvasId.startsWith("chart-crossrenew-")){renderCrossRenew();return;}
   if(canvasId.startsWith("chart-consum-")){renderConsumables();return;}
   if(canvasId.startsWith("chart-bfd-")){
     if(!r.biggestCast)return;
@@ -7861,7 +7956,8 @@ function getBarTableForCanvas(canvasId){
     return{xLabel:"Top rank",yLabel:"Top rank %",rows:names.map(n=>{const r=byName[n],t=r.segs&&r.segs[0];return{name:n,cls:r.cls,x:t?t.label:"—",y:t?+(t.share*100).toFixed(1):0};})};
   }
   if(canvasId.startsWith("chart-casts-")){
-    return{xLabel:"Casts",yLabel:"Per min",rows:names.map(n=>({name:n,cls:byName[n].cls,x:byName[n].total||0,y:+(byName[n].cpm||0).toFixed(2)}))};
+    if(castsMode==="ncasts")return{xLabel:"nCasts",yLabel:"nCPM",rows:names.map(n=>({name:n,cls:byName[n].cls,x:Math.round(byName[n].norm||0),y:+(byName[n].ncpm||0).toFixed(2)}))};
+    return{xLabel:"Casts",yLabel:"Per min",rows:names.map(n=>({name:n,cls:byName[n].cls,x:byName[n].raw||0,y:+(byName[n].cpm||0).toFixed(2)}))};
   }
   if(canvasId.startsWith("chart-mana-")){
     if(manaViewMode==="pct"&&names.some(n=>byName[n]._pctRef!=null))
@@ -7881,6 +7977,7 @@ function getBarTableForCanvas(canvasId){
   if(canvasId.startsWith("chart-consum-")){
     return{xLabel:"Uses",yLabel:"Mana (est.)",rows:names.map(n=>({name:n,cls:byName[n].cls,x:byName[n].total||0,y:byName[n].mana||0}))};
   }
+  if(canvasId.startsWith("chart-crossrenew-"))return null; // the heat map is already a table
   if(canvasId.startsWith("chart-crossheal-")){
     return{xLabel:"Crossheal %",yLabel:"Effective healing",rows:(document.getElementById(canvasId)._xhRows||[]).map(r=>({name:r.name,cls:r.cls,x:+(r.pctCross||0).toFixed(1),y:Math.round(r.total)}))};
   }
@@ -8127,13 +8224,18 @@ if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded"
 function getSectionHeaderInfo(panelsEl){
   let titleText="",subText="",legendItems=[];
   let prev=panelsEl.previousElementSibling;
+  // Skip helper blocks that sit between the legend and the panels (e.g. the
+  // crosshealing "Inferred groups" list).
+  while(prev&&prev.classList&&prev.classList.contains("crossheal-groups"))prev=prev.previousElementSibling;
   // Dispels/Trinkets-style rows: a .dispel-legend color-swatch row sits
   // directly above .panels, with the section title one more sibling up.
+  // Items without a swatch (e.g. "No warrior trinket uses found") are skipped
+  // — reading .style of a missing swatch used to throw and kill the copy.
   if(prev&&prev.classList&&prev.classList.contains("dispel-legend")){
-    legendItems=[...prev.querySelectorAll(".dispel-leg-item")].map(it=>({
-      color:(it.querySelector(".dispel-leg-sq")||{}).style.background||"#888",
-      label:(it.textContent||"").trim(),
-    }));
+    legendItems=[...prev.querySelectorAll(".dispel-leg-item")].map(it=>{
+      const sq=it.querySelector(".dispel-leg-sq");if(!sq)return null;
+      return{color:sq.style.background||getComputedStyle(sq).backgroundColor||"#888",label:(it.textContent||"").trim()};
+    }).filter(x=>x&&x.label);
     prev=prev.previousElementSibling;
   }
   if(prev){
@@ -9595,6 +9697,131 @@ async function exportBothSnapshot(){
 
 // ── Tabs ────────────────────────────────────────────────────────────────────
 const HEALER_ONLY_TOPBAR=["#url-row-healers","#fetch-all-btn","#highlight-healer-sel","#group8-priest-sel","#healer-status-wrap","#load-progress-wrap","#api-usage"];
+// ═══ Raw data copy / paste ═══════════════════════════════════════════════════
+// Copy: every finished WarcraftLogs response in the request cache (both tabs),
+// gzip + base64, prefixed "ENCRAW1:". Paste: the responses seed the cache and
+// the log is loaded normally — so a newer version re-runs all of its
+// analysis from the pasted data and only goes to the network for requests
+// the older version never made ("fetch remaining").
+const RAW_PREFIX="ENCRAW1:";
+function rawMsg(t,c){const m=document.getElementById("raw-msg");if(m){m.textContent=t;m.style.color=c||"var(--muted)";}}
+async function gzipB64(str){
+  const cs=new Blob([str]).stream().pipeThrough(new CompressionStream("gzip"));
+  const buf=new Uint8Array(await new Response(cs).arrayBuffer());
+  let bin="";for(let i=0;i<buf.length;i+=0x8000)bin+=String.fromCharCode.apply(null,buf.subarray(i,i+0x8000));
+  return btoa(bin);
+}
+async function gunzipB64(b64){
+  const bin=atob(b64.replace(/\s+/g,""));const buf=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)buf[i]=bin.charCodeAt(i);
+  const ds=new Blob([buf]).stream().pipeThrough(new DecompressionStream("gzip"));
+  return await new Response(ds).text();
+}
+function currentReportCode(){
+  return(raidHead&&raidHead.code)||(typeof cachedReport!=="undefined"&&cachedReport&&cachedReport.code)||(typeof dpsReport!=="undefined"&&dpsReport&&dpsReport.code)||null;
+}
+async function copyRawData(){
+  const code=currentReportCode();
+  if(!code||!v1Cache.size){rawMsg("Load a log first — there's nothing to copy yet.","#e0a060");return;}
+  if(typeof CompressionStream==="undefined"){rawMsg("This browser can't compress the data (needs a recent Chrome / Edge / Firefox / Safari).","#e06060");return;}
+  const btn=document.getElementById("raw-copy-btn");if(btn)btn.disabled=true;
+  rawMsg("Packing…");
+  try{
+    const keys=[...v1Cache.keys()];
+    const settled=await Promise.allSettled(keys.map(k=>v1Cache.get(k)));
+    const entries=[];settled.forEach((r,i)=>{if(r.status==="fulfilled"&&r.value!=null)entries.push([keys[i],r.value]);});
+    const payload=JSON.stringify({fmt:"encore-raw",v:1,app:typeof APP_VERSION!=="undefined"?APP_VERSION:"",code,at:Date.now(),entries});
+    const str=RAW_PREFIX+await gzipB64(payload);
+    let ok=false;
+    try{await navigator.clipboard.writeText(str);ok=true;}catch(e){}
+    const mb=(str.length/1048576).toFixed(1);
+    if(ok)rawMsg(`Copied ${entries.length} responses (${mb} MB) for ${code}. Paste it with "Paste raw data" in any newer version.`,"#52d273");
+    else{
+      // clipboard blocked — show it in the paste box so it can be copied by hand
+      openRawPaste();const ta=document.getElementById("raw-in");if(ta){ta.value=str;ta.select();}
+      rawMsg(`Clipboard blocked — the string (${mb} MB) is selected in the box: press Ctrl+C.`,"#e0a060");
+    }
+  }catch(e){console.error(e);rawMsg("Copy failed: "+e.message,"#e06060");}
+  finally{if(btn)btn.disabled=false;}
+}
+function openRawPaste(){
+  const o=document.getElementById("raw-overlay");if(!o)return;
+  o.classList.add("show");const ta=document.getElementById("raw-in");if(ta){ta.value="";setTimeout(()=>ta.focus(),30);}
+}
+async function loadRawData(){
+  const ta=document.getElementById("raw-in");let str=(ta&&ta.value||"").trim();
+  if(!str){try{str=(await navigator.clipboard.readText()).trim();}catch(e){}}
+  if(!str.startsWith(RAW_PREFIX)){rawMsg("That isn't a raw-data string (it should start with "+RAW_PREFIX+").","#e06060");return;}
+  if(typeof DecompressionStream==="undefined"){rawMsg("This browser can't decompress the data.","#e06060");return;}
+  rawMsg("Unpacking…");
+  try{
+    const data=JSON.parse(await gunzipB64(str.slice(RAW_PREFIX.length)));
+    if(!data||data.fmt!=="encore-raw"||!Array.isArray(data.entries)||!data.code)throw new Error("unrecognised data");
+    rawSeed=new Map(data.entries.filter(e=>Array.isArray(e)&&typeof e[0]==="string"&&e[0].startsWith(V1)).map(e=>[e[0],e[1]]));
+    document.getElementById("raw-overlay").classList.remove("show");
+    const ui=document.getElementById("url-in");if(ui)ui.value=data.code;
+    const ud=document.getElementById("dps-url-in");if(ud)ud.value=data.code;
+    rawMsg(`Loaded ${rawSeed.size} responses for ${data.code}${data.app?` (from v${data.app})`:""} — anything else this version needs is being fetched${getApiKey()?"":" (paste your API key if that fails)"}.`,"#52d273");
+    if(typeof dpsReport!=="undefined")dpsReport=null;
+    switchTab("healers");
+    await loadReport(data.code);
+  }catch(e){console.error(e);rawMsg("Couldn't read that string: "+e.message,"#e06060");}
+}
+
+// ═══ Section tabs (quick filter / navigation) ═══════════════════════════════
+// One chip per visible chart section; clicking shows only that section (and
+// scrolls to it), "All" brings everything back. Built from the live DOM, so
+// sections that stay hidden for this log (no data) get no chip.
+const SEC_NAV_SHORT={attention:"Attention Spread","section-effscatter":"MPS","section-spellmix":"Spell Mix","section-tankact":"Tank Sit vs Activity",
+  "section-ehpct":"Effective Healing","section-casts":"Total Casts","section-mana":"Mana Spent","section-effmana":"Heal per Mana","section-mobility":"Mobility",
+  "section-tanksitting":"Tank Sitting","section-bfd":"BFD Crit","section-utildmg":"Eng & Alchemy","section-dispels":"Dispels","section-trinkets":"Trinkets",
+  "section-crossheal":"Crosshealing","section-crossrenew":"Cross-Renews","section-healcd":"Cooldowns","section-consum":"Mana Consumables"};
+const secNavSel={healers:"all",dps:"all"};
+function secNavSections(tab){
+  if(tab==="dps"){
+    return[...document.querySelectorAll("#dps-sections>.dps-section")].map(el=>{
+      const sec=(typeof DPS_SECTIONS!=="undefined"?DPS_SECTIONS:[]).find(x=>"dps-sec-"+x.id===el.id);
+      const SHORT={"dps-sec-scatter":"Activity vs Damage","dps-sec-wdmg":"Warrior Damage","dps-sec-admg":"All Damage","dps-sec-bfd":"BFD Hit","dps-sec-util":"Eng & Alchemy","dps-sec-wtrink":"Trinkets","dps-sec-wcons":"Consumables","dps-sec-effsunder":"Effective Sunders","dps-sec-active":"Active Time","dps-sec-casts":"Total Casts"};
+      let t=SHORT[el.id]||(sec?sec.title:(el.querySelector(".row-label")||{}).firstChild?.textContent||el.id);
+      t=String(t).trim().replace(/^Overall /,"").replace(/ casts$/," ").replace(/ — All Damage Dealers$/,"").replace(/^The Citynoise's /,"").trim();
+      return{key:el.id,label:t,els:[el]};
+    });
+  }
+  const wrap=document.getElementById("charts-wrap");if(!wrap)return[];
+  const out=[{key:"attention",label:SEC_NAV_SHORT.attention,els:[document.getElementById("attention-label"),wrap.querySelector(":scope>.how-btn"),document.getElementById("panels")].filter(Boolean)}];
+  wrap.querySelectorAll(":scope>[id^=section-]").forEach(el=>out.push({key:el.id,label:SEC_NAV_SHORT[el.id]||((el.querySelector(".row-label")||{}).firstChild?.textContent||el.id).trim(),els:[el]}));
+  return out;
+}
+function secNavVisible(x){return x.els.some(el=>el.style.display!=="none");}
+function renderSecNav(tab){
+  const nav=document.getElementById("sec-nav-"+tab);if(!nav)return;
+  const secs=secNavSections(tab).filter(secNavVisible);
+  const cur=secNavSel[tab];
+  if(cur!=="all"&&!secs.some(x=>x.key===cur))secNavSel[tab]="all";
+  const html=(secs.length>1?[`<button type="button" class="sec-chip all${secNavSel[tab]==="all"?" on":""}" onclick="pickSecNav('${tab}','all')">All</button>`,
+    ...secs.map(x=>`<button type="button" class="sec-chip${secNavSel[tab]===x.key?" on":""}" onclick="pickSecNav('${tab}','${x.key}')">${x.label}</button>`)]:[]).join("");
+  if(nav.innerHTML!==html)nav.innerHTML=html;
+}
+function pickSecNav(tab,key){
+  secNavSel[tab]=key;
+  secNavSections(tab).forEach(x=>x.els.forEach(el=>el.classList.toggle("sec-hidden",key!=="all"&&x.key!==key)));
+  renderSecNav(tab);
+  const nav=document.getElementById("sec-nav-"+tab);
+  if(nav){const y=nav.getBoundingClientRect().top+window.scrollY-8;if(window.scrollY>y)window.scrollTo({top:y,behavior:"smooth"});}
+  // charts drawn while hidden have no width — redraw what's now on screen
+  requestAnimationFrame(()=>{try{if(tab==="dps"){if(dpsReport)dpsRenderAll();}else if(cachedReport)onHighlightChange();}catch(e){console.warn(e);}});
+}
+(function(){
+  if(!window.MutationObserver)return;
+  let t=null;const kick=()=>{clearTimeout(t);t=setTimeout(()=>{renderSecNav("healers");renderSecNav("dps");},120);};
+  const mo=new MutationObserver(kick);
+  const hook=()=>{
+    const a=document.getElementById("charts-wrap");if(a)mo.observe(a,{attributes:true,attributeFilter:["style"],subtree:true});
+    const b=document.getElementById("dps-sections");if(b)mo.observe(b,{childList:true,attributes:true,attributeFilter:["style"],subtree:false});
+    kick();
+  };
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",hook);else hook();
+})();
+
 function switchTab(tab){
   currentTab=tab==="dps"?"dps":"healers";
   try{localStorage.setItem("hs_tab",currentTab);}catch(e){}
@@ -9714,8 +9941,9 @@ const GUIDE_TEXT={
 <li><b>Casts</b> / <b>Weighted</b> (× cast time, like nCPM) / <b>Mana</b> (share of mana spent — pairs with MPS above).</li>
 <li>Utility casts (dispels, Fear Ward, PI, Inner Focus, Divine Favor, Nature's Swiftness, Lay on Hands, Innervate) are left out.</li></ul>`],
   "section-casts":["Total Casts",`<ul>
-<li>Every healing spell and dispel each healer cast, counted one by one — no cast-time weighting (that's what nCPM adds).</li>
-<li>Label: casts · casts per minute. Hover for the per-spell breakdown by rank.</li>
+<li><b>Casts</b>: every healing spell and dispel each healer cast, counted one by one. Label: casts · casts per minute.</li>
+<li><b>nCasts</b>: normalized casts = nCPM × time. Each cast counts its cast time in GCDs (3s Greater Heal = 2, 2.5s Heal ≈ 1.67, Flash Heal / instants = 1). Label: nCasts · nCPM.</li>
+<li>Hover for the per-spell breakdown by rank, with both counts.</li>
 <li>Bosses Only follows the boss wheel like the mana charts.</li></ul>`],
   "section-mana":["Estimated Mana Spent",`<ul>
 <li>Mana spent on the heals counted in Effective Healing (rank × casts × mana cost).</li>
@@ -9751,6 +9979,12 @@ const GUIDE_TEXT={
 <li>The <b>Group 2 priest</b>'s own group also includes the tank group's paladin / non-tanks. The <b>Group 8 priest</b>'s includes Group 7 — the casters no party buff could place. Group 8 priest = your pick in the top bar, otherwise the priest grouped with a druid + 2 paladins.</li>
 <li>Groups come from party-only buffs and Prayer of Healing. Moves are only checked on Sapphiron and C'Thun, and need 2+ group buffs showing the player in another group. Open <b>Inferred groups</b> to check them.</li>
 <li>Label: crosshealing share. Hover for amounts and who you crosshealed most.</li></ul>`],
+  "section-crossrenew":["Priest Cross-Renews",`<ul>
+<li>Heat map: one row per priest, ordered by their group (Group 2 priest first, Group 8 priest last); one column per raid group, plus Tanks.</li>
+<li><b>Renews</b> counts Renew casts (applied or refreshed) during fights; <b>Healing</b> shows effective Renew healing.</li>
+<li><b style="color:#52d273">Green</b> cells are the priest's own group (Group 2 priest also owns G1's non-tanks, Group 8 priest also G7). <b style="color:#ff5c5c">Red</b> cells are cross-renews — the darker, the more. Tanks are in their own column and never count as cross.</li>
+<li>Right column: cross-renews and their share of the priest's renews on groups (tanks excluded).</li>
+<li>G1 = tank group, G2 / G8 = the Group 2 / Group 8 priests' groups, G7 = casters. The combat log has no real group numbers, so G3–G6 are the remaining priests' groups in name order. Hover a cell for who got the renews, or a column header for the group's members.</li></ul>`],
   "section-healcd":["Healer Cooldowns",`<ul>
 <li>How often each healer used Inner Focus, Divine Favor, Nature's Swiftness, Swiftmend, Lay on Hands, Innervate, Mana Tide Totem, Divine Intervention and Blessing of Protection.</li>
 <li><b>Hover</b> to see what each Inner Focus / Divine Favor / Nature's Swiftness was paired with — an expensive heal (Greater Heal, Prayer of Healing, Healing Touch) is a good pairing; "(unused)" means it was never spent.</li>
@@ -10113,9 +10347,10 @@ function panelMetricFor(canvasId){
   if(canvasId.startsWith("chart-dispels-"))return v("dispelViewMode","effective")==="effective"?"Effective dispels":"Total dispels";
   if(canvasId.startsWith("chart-trinkets-"))return(v("trinketViewMode","all")==="pi"?"Power Infusion only":"Trinkets & Power Infusion")+(v("trinketRateMode","uses")==="upm"?" · uses per minute":"");
   if(canvasId.startsWith("chart-crossheal-"))return"Priest healing · own group vs crosshealing";
+  if(canvasId.startsWith("chart-crossrenew-"))return(crossRenewMode==="eff"?"Renew healing":"Renews")+" per group · priests G2 → G8";
   if(canvasId.startsWith("chart-healcd-"))return v("healCdMode","cds")==="fw"?"Fear Wards · cast / consumed":"Healer cooldowns";
   if(/^chart-(all|boss|trash)$/.test(canvasId))return v("ncpmMode","ncpm")==="ncasts"?"Attention Spread · nCasts × Neff":"Attention Spread · nCPM × Neff";
-  if(canvasId.startsWith("chart-casts-"))return"Total casts · heals + dispels";
+  if(canvasId.startsWith("chart-casts-"))return castsMode==="ncasts"?"Normalized casts (nCPM × time) · heals + dispels":"Total casts · heals + dispels";
   if(canvasId.startsWith("chart-spellmix-"))return"Spell mix · "+({casts:"share of casts",weighted:"share of cast time",mana:"share of mana"}[v("spellMixMode","casts")]||"");
   if(canvasId.startsWith("chart-consum-"))return v("consumWho","healers")==="raid"?"Mana consumables · raid":"Mana consumables · healers";
   const m=canvasId.match(/^dps-chart-(.+)-(all|boss|trash)$/);
@@ -10355,26 +10590,40 @@ async function computeFearWardEffect(code,fights,idToName){
 // Same per-scope / per-boss cast data as the mana charts, so it's drawn
 // alongside them (wrapping drawManaCanvas keeps every caller — load, boss
 // wheel, snapshot boot, copy-image redraw — in sync with no extra fetches).
+var castsMode="casts"; // casts | ncasts (normalized: cast time ÷ GCD per cast)
+function setCastsMode(m){
+  castsMode=m==="ncasts"?"ncasts":"casts";
+  document.querySelectorAll(".casts-toggle button").forEach(b=>b.classList.toggle("active",b.dataset.cm===castsMode));
+  ["all","boss","trash"].forEach(sc=>{try{redrawBarPanel("mana-"+sc);}catch(e){}});
+  if(typeof updatePanelMetrics==="function")updatePanelMetrics();
+}
+function castNorm(c){return Math.max(spellMixCt(c)||0,GCD)/GCD;}
 function drawCastsCanvas(canvasId,healers,spellCastsMap,durationMin){
   const canvas=document.getElementById(canvasId);if(!canvas)return;
   spellCastsMap=spellCastsMap||{};
+  const nc=castsMode==="ncasts";
   const rows=(healers||[]).map(h=>{
     const casts=spellCastsMap[h.name]||[];
-    const total=casts.reduce((s,c)=>s+(c.count||0),0);
-    return{name:h.name,cls:h.type,type:h.type,total,cpm:durationMin>0?total/durationMin:0,_casts:casts};
+    const raw=casts.reduce((s,c)=>s+(c.count||0),0);
+    const norm=casts.reduce((s,c)=>s+(c.count||0)*castNorm(c),0);
+    const total=nc?norm:raw;
+    return{name:h.name,cls:h.type,type:h.type,total,raw,norm,cpm:durationMin>0?raw/durationMin:0,ncpm:durationMin>0?norm/durationMin:0,_casts:casts,_min:durationMin};
   }).sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name));
   rows.splice(0,rows.length,...collapseZeroRows(rows,r=>!r.total,canvas));
   attachBarHover(canvasId,row=>{
-    let h=`<div class="ht-title">${htName(row.name,row.cls)} — total casts</div>`;
-    const by={};row._casts.forEach(c=>{const k=c.name+(c.rank?` (R${c.rank})`:"");by[k]=(by[k]||0)+(c.count||0);});
-    const e=Object.entries(by).sort((a,b)=>b[1]-a[1]);
-    h+=e.length?e.map(([k,v])=>`<div class="ht-row"><span>${k}</span><strong>${v}</strong></div>`).join(""):`<div class="ht-row">No casts</div>`;
-    return h+`<div class="ht-note">${row.total.toLocaleString()} casts · ${row.cpm.toFixed(1)} per minute</div>`;
+    let h=`<div class="ht-title">${htName(row.name,row.cls)} — ${nc?"normalized casts":"total casts"}</div>`;
+    const by={};row._casts.forEach(c=>{const k=c.name+(c.rank?` (R${c.rank})`:"");const o=(by[k]=by[k]||{n:0,w:0});o.n+=(c.count||0);o.w+=(c.count||0)*castNorm(c);});
+    const e=Object.entries(by).sort((a,b)=>(nc?b[1].w-a[1].w:b[1].n-a[1].n));
+    if(e.length){
+      h+=`<div class="ht-row3" style="color:#585d6e;font-size:9px;"><span>Spell</span><span>Casts</span><strong>nCasts</strong></div>`;
+      h+=e.map(([k,v])=>`<div class="ht-row3"><span>${k}</span><span>${v.n}</span><strong>${Math.round(v.w).toLocaleString()}</strong></div>`).join("");
+    }else h+=`<div class="ht-row">No casts</div>`;
+    return h+`<div class="ht-note">${row.raw.toLocaleString()} casts · ${row.cpm.toFixed(1)}/min<br>${Math.round(row.norm).toLocaleString()} nCasts · ${row.ncpm.toFixed(1)} nCPM × ${(row._min||0).toFixed(1)} min</div>`;
   });
   const g=makeBarCanvas(canvasId,Math.max(rows.length,1));if(!g)return;
   const{ctx,PAD,BAR_H,BAR_GAP,pw,ph,W}=g;
   canvas._hoverRows=[];
-  const label=r=>`${r.total.toLocaleString()} · ${r.cpm.toFixed(1)}/min`;
+  const label=r=>nc?`${Math.round(r.norm).toLocaleString()} · ${r.ncpm.toFixed(1)} nCPM`:`${r.raw.toLocaleString()} · ${r.cpm.toFixed(1)}/min`;
   const xMax=xMaxFittingLabels(ctx,rows,r=>r.total,label,pw);
   drawXAxisNum(ctx,PAD,ph,pw,xMax,true);
   rows.forEach((r,i)=>{
@@ -10741,7 +10990,7 @@ function decorateRunTime(){
     const meta=document.getElementById(mid);if(!meta)return;
     let ws=document.getElementById(mid+"-splits");
     if(!r.wings.length){if(ws)ws.remove();return;}
-    if(!ws){ws=document.createElement("div");ws.id=mid+"-splits";ws.className="run-splits";meta.insertAdjacentElement("afterend",ws);}
+    if(!ws){ws=document.createElement("div");ws.id=mid+"-splits";ws.className="run-splits";(meta.closest(".rh-top")||meta).insertAdjacentElement("afterend",ws);}
     const html="Wings: "+r.wings.map(w=>`<b>${w.wing}</b> ${fmtRun(w.ms)}${w.done<w.of?` <span title="${w.done}/${w.of} bosses killed">(${w.done}/${w.of})</span>`:""}`).join(" · ");
     if(ws.innerHTML!==html)ws.innerHTML=html;
   });
@@ -10821,14 +11070,20 @@ async function fetchAndDrawCrossheal(code,allFights,friendlies){
   const who=id=>players[id]||owner[id]||null;
   const clsByName=Object.fromEntries((friendlies||[]).map(h=>[h.name,h.type]));
   const start=0,end=Math.max(...allFights.map(f=>f.end_time));
-  const names=[...XH_TARGET_PARTY,...XH_CASTER_PARTY].map(n=>'"'+n+'"').join(", ");
+  const names=[...XH_TARGET_PARTY,...XH_CASTER_PARTY,"Renew"].map(n=>'"'+n+'"').join(", ");
+  const renewByFight={};
+  const fightOf=ts=>allFights.find(f=>ts>=f.start_time&&ts<=f.end_time);
+  const rbump=(fid,src,tgt,k,v)=>{const a=(renewByFight[fid]=renewByFight[fid]||{});const b=(a[src]=a[src]||{});const c=(b[tgt]=b[tgt]||{n:0,eff:0});c[k]+=v;};
   const [buffPages,healPages]=await Promise.all([
     v1PagedEvents(code,{start,end,hostility:0,filter:`type in ("applybuff","refreshbuff") and ability.name in (${names})`}),
     Promise.all(allFights.map(f=>v1PagedEvents(code,{start:f.start_time,end:f.end_time,hostility:0,filter:UTIL_DMG_EVENT_FILTER}))),
   ]);
   const tp=new Set(XH_TARGET_PARTY),evidence=[],casts={};
   for(const pg of buffPages||[])for(const ev of pg.events||[]){
-    const an=ev.ability&&ev.ability.name;const tgt=players[ev.targetID];if(!tgt)continue;
+    const an=ev.ability&&ev.ability.name;
+    if(an==="Renew"){const src=players[ev.sourceID];const tg=players[ev.targetID]||(owner[ev.targetID]?"pet:"+owner[ev.targetID]:null);const f=fightOf(ev.timestamp);
+      if(src&&tg&&f&&clsByName[src]==="Priest")rbump(f.id,src,tg,"n",1);continue;}
+    const tgt=players[ev.targetID];if(!tgt)continue;
     if(tp.has(an)){const k=ev.sourceID+"|"+an+"|"+ev.timestamp;(casts[k]=casts[k]||{ts:ev.timestamp,k:"tp",m:new Set()}).m.add(tgt);}
     else{const src=who(ev.sourceID);if(src&&src!==tgt)evidence.push({ts:ev.timestamp,k:"pair",m:[src,tgt]});}
   }
@@ -10845,6 +11100,7 @@ async function fetchAndDrawCrossheal(code,allFights,friendlies){
         const pt=(pohTargets[src]=pohTargets[src]||{});pt[players[ev.targetID]]=(pt[players[ev.targetID]]||0)+1;}
       if(!priests.has(src)||!tgt)continue;
       const eff=Math.max(0,(ev.amount||0)-(ev.overheal||0));if(!eff)continue;
+      if(an==="Renew")rbump(f.id,src,tgt,"eff",eff);
       (m[src]=m[src]||{})[tgt]=(m[src][tgt]||0)+eff;
     }
   });
@@ -10853,9 +11109,10 @@ async function fetchAndDrawCrossheal(code,allFights,friendlies){
   const inf=xhInferGroups(evidence,allFights);
   if(!cachedReport)return;
   const present=new Set();(friendlies||[]).forEach(f=>{if(TALENT_TREES[f.type]&&(f.fights||[]).length)present.add(f.name);});
-  cachedReport.crossheal={v:2,groups:inf.groups,override:inf.override,moves:inf.moves,byFight,tanks,cls:clsByName,pohTargets,present:[...present],evidence:evidence.length};
+  cachedReport.crossheal={v:3,renewByFight,groups:inf.groups,override:inf.override,moves:inf.moves,byFight,tanks,cls:clsByName,pohTargets,present:[...present],evidence:evidence.length};
   console.info(`[crossheal] ${evidence.length} party-evidence events → ${inf.groups.length} groups, ${inf.moves.length} per-fight moves`,inf.groups);
   renderBossButtons("crossheal-boss-sel",cachedReport.bossFights||[],renderCrossheal,true);
+  renderBossButtons("crossrenew-boss-sel",cachedReport.bossFights||[],renderCrossRenew,true);
   renderCrossheal();
 }
 // Group 7 = everyone the buffs couldn't place (casters without a priest or
@@ -10997,6 +11254,150 @@ function renderCrossheal(){
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
     drawCrosshealCanvas("chart-crossheal-all",all,roles);drawCrosshealCanvas("chart-crossheal-boss",boss,roles);drawCrosshealCanvas("chart-crossheal-trash",trash,roles);
   }));
+  try{renderCrossRenew(roles);}catch(e){console.warn("[crossrenew]",e);}
+}
+
+// ═══ Priest cross-renews heat map ════════════════════════════════════════════
+var crossRenewMode="n"; // n = Renew casts · eff = effective Renew healing
+function setCrossRenewMode(m){
+  crossRenewMode=m==="eff"?"eff":"n";
+  document.querySelectorAll(".crossrenew-toggle button").forEach(b=>b.classList.toggle("active",b.dataset.cr===crossRenewMode));
+  renderCrossRenew();if(typeof updatePanelMetrics==="function")updatePanelMetrics();
+}
+// Group numbers: G1 tank group, G2 = Group 2 priest's group, G8 = Group 8
+// priest's group, G7 = casters (unplaced + priestless), G3–G6 = the other
+// priests' groups in name order. Real numbers aren't in the combat log.
+function xhGroupNumbers(x,roles){
+  const num={};const used=new Set();
+  const set=(gid,n)=>{if(gid==null||num[gid]!=null)return;num[gid]=n;used.add(n);};
+  set(roles.tankGid,1);
+  if(roles.g2)set(roles.gidOf[roles.g2],2);
+  if(roles.g8)set(roles.gidOf[roles.g8],8);
+  num[XH_G7]=7;used.add(7);(roles.g7||[]).forEach(g=>{if(num[g]==null)num[g]=7;});
+  const prName=gid=>((x.groups[gid]||[]).filter(n=>x.cls[n]==="Priest").sort()[0])||"~"+((x.groups[gid]||[]).slice().sort()[0]||"");
+  const rest=x.groups.map((g,i)=>i).filter(i=>num[i]==null).sort((a,b)=>prName(a).localeCompare(prName(b)));
+  let n=2;rest.forEach(gid=>{while(used.has(n)&&n<8)n++;if(used.has(n)){num[gid]=9;return;}num[gid]=n;used.add(n);});
+  return num;
+}
+function crossRenewData(fightIds,roles,num){
+  const x=cachedReport.crossheal;const rb=x.renewByFight||{};const poh=x.pohTargets||{};
+  const key=crossRenewMode==="eff"?"eff":"n";
+  const rows={};
+  fightIds.forEach(fid=>{
+    const ov=x.override[fid]||{};const g=n=>ov[n]!=null?ov[n]:roles.gidOf[n];
+    Object.entries(rb[fid]||{}).forEach(([p,tg])=>{
+      const r=rows[p]=rows[p]||{name:p,cells:{},tgt:{},cross:0,grp:0};
+      Object.entries(tg).forEach(([t,v])=>{
+        const val=v[key]||0;if(!val)return;
+        let col;
+        if(t.startsWith("pet:"))col="pets";
+        else if(roles.tanks.has(t))col="T";
+        else{const gg=g(t);col=gg==null?"?":("G"+(num[gg]!=null?num[gg]:"?"));}
+        r.cells[col]=(r.cells[col]||0)+val;
+        const tt=(r.tgt[col]=r.tgt[col]||{});tt[t]=(tt[t]||0)+val;
+      });
+    });
+  });
+  const ownCols=p=>{const s=new Set();const myN=num[roles.gidOf[p]];if(myN!=null)s.add("G"+myN);if(p===roles.g2)s.add("G1");if(p===roles.g8)s.add("G7");return s;};
+  Object.values(rows).forEach(r=>{
+    r.own=ownCols(r.name);r.myN=num[roles.gidOf[r.name]];
+    Object.entries(r.cells).forEach(([c,v])=>{if(!/^G\d$/.test(c))return;r.grp+=v;if(!r.own.has(c))r.cross+=v;});
+    r.crossPct=r.grp?100*r.cross/r.grp:0;
+    r.pohTanks=Object.keys(r.tgt.T||{}).filter(t=>poh[r.name]&&poh[r.name][t]);
+  });
+  const priests=Object.keys(x.cls||{}).filter(n=>x.cls[n]==="Priest"&&(rows[n]||(roles.gidOf[n]!=null&&Object.values(x.byFight||{}).some(m=>m[n]))));
+  priests.forEach(n=>{if(!rows[n])rows[n]={name:n,cells:{},tgt:{},cross:0,grp:0,crossPct:0,own:ownCols(n),myN:num[roles.gidOf[n]],pohTanks:[]};});
+  return Object.values(rows).sort((a,b)=>((a.myN??99)-(b.myN??99))||a.name.localeCompare(b.name));
+}
+function crossRenewTip(row){
+  if(!row)return"";
+  const x=cachedReport.crossheal;const fmt=v=>crossRenewMode==="eff"?fmtShort(v):Math.round(v).toLocaleString();
+  const unit=crossRenewMode==="eff"?"Renew healing":"Renews";
+  if(row._hdr){
+    let h=`<div class="ht-title">${row.col.label}${row.col.sub?` — ${row.col.sub}`:""}</div>`;
+    return h+`<div class="ht-note">${(row.col.members||[]).map(n=>htName(n,x.cls[n]||"")).join(", ")||"—"}</div>`;
+  }
+  const r=row.r,c=row.col;
+  let h=`<div class="ht-title">${htName(r.name,"Priest")} → ${c.label}${c.sub?` (${c.sub})`:""}</div>`;
+  const v=r.cells[c.key]||0;
+  const kind=c.key==="T"?"tanks — not counted as cross":r.own.has(c.key)?"own group":/^G\d$/.test(c.key)?"cross-renew":"left out";
+  h+=`<div class="ht-row"><span>${unit}</span><strong>${fmt(v)} · ${kind}</strong></div>`;
+  const top=Object.entries(r.tgt[c.key]||{}).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  h+=top.map(([n,a])=>`<div class="ht-row"><span>${htName(n.replace(/^pet:/,""),x.cls[n]||"")}${n.startsWith("pet:")?" (pet)":""}${c.key==="T"&&r.pohTanks.includes(n)?" · in their PoH group":""}</span><strong>${fmt(a)}</strong></div>`).join("");
+  return h+`<div class="ht-note">${r.name}: ${fmt(r.cross)} cross of ${fmt(r.grp)} on groups (${r.crossPct.toFixed(1)}%)</div>`;
+}
+function drawCrossRenewCanvas(canvasId,rows,cols){
+  const canvas=document.getElementById(canvasId);if(!canvas)return;
+  attachBarHover(canvasId,crossRenewTip);
+  canvas._crRows=rows;canvas._crCols=cols;
+  const g=makeBarCanvas(canvasId,Math.max(rows.length,1)+1);if(!g)return;
+  const{ctx,PAD,BAR_H,BAR_GAP,W}=g;
+  canvas._hoverRows=[];
+  const sumW=74,x0=PAD.left;
+  const cw=Math.max(18,(W-PAD.left-sumW-8)/Math.max(cols.length,1));
+  const fmt=v=>crossRenewMode==="eff"?fmtShort(v):String(Math.round(v));
+  // header
+  ctx.textBaseline="middle";ctx.textAlign="center";
+  cols.forEach((c,i)=>{const cx=x0+i*cw;
+    ctx.fillStyle=c.key==="T"?"#e8c04d":"#dde0ea";ctx.font="bold 11px Inter,sans-serif";ctx.fillText(c.label,cx+cw/2,PAD.top+BAR_H/2);
+    canvas._hoverRows.push({x:cx,y:PAD.top,w:cw,h:BAR_H,row:{_hdr:true,col:c,name:""}});
+  });
+  ctx.fillStyle="#dde0ea";ctx.font="bold 11px Inter,sans-serif";ctx.fillText("Cross",x0+cols.length*cw+8+sumW/2,PAD.top+BAR_H/2);
+  if(!rows.length){ctx.fillStyle="#585d6e";ctx.font="11px Inter,sans-serif";ctx.textAlign="left";ctx.fillText("No Renews in this scope",x0+6,PAD.top+BAR_H+BAR_GAP+BAR_H/2);return;}
+  let maxCross=0,maxOwn=0,maxT=0;
+  rows.forEach(r=>cols.forEach(c=>{const v=r.cells[c.key]||0;if(c.key==="T")maxT=Math.max(maxT,v);else if(r.own.has(c.key))maxOwn=Math.max(maxOwn,v);else maxCross=Math.max(maxCross,v);}));
+  const maxPct=Math.max(1,...rows.map(r=>r.crossPct));
+  rows.forEach((r,i)=>{
+    const y=PAD.top+(i+1)*(BAR_H+BAR_GAP);
+    cols.forEach((c,j)=>{
+      const cx=x0+j*cw,v=r.cells[c.key]||0;
+      const own=r.own.has(c.key),isT=c.key==="T";
+      let fill="rgba(255,255,255,0.035)",txt="#7c8296";
+      if(v>0){
+        if(isT){const a=0.15+0.55*v/(maxT||1);fill=`rgba(232,192,77,${a.toFixed(3)})`;txt=a>0.45?"#0d0e11":"#e8e3cf";}
+        else if(own){const a=0.15+0.55*v/(maxOwn||1);fill=`rgba(82,210,115,${a.toFixed(3)})`;txt=a>0.45?"#0d0e11":"#dff5e5";}
+        else{const a=0.2+0.75*v/(maxCross||1);fill=`rgba(255,92,92,${a.toFixed(3)})`;txt=a>0.5?"#0d0e11":"#ffe1e1";}
+      }
+      ctx.fillStyle=fill;ctx.fillRect(cx+1,y,cw-2,BAR_H);
+      if(own&&!isT){ctx.strokeStyle="#52d273";ctx.lineWidth=1.5;ctx.strokeRect(cx+1.75,y+0.75,cw-3.5,BAR_H-1.5);}
+      if(v>0){ctx.fillStyle=txt;ctx.font="600 10px Inter,sans-serif";ctx.textAlign="center";ctx.fillText(fmt(v),cx+cw/2,y+BAR_H/2);}
+      canvas._hoverRows.push({x:cx,y,w:cw,h:BAR_H,row:{r,col:c,name:r.name}});
+    });
+    const sx=x0+cols.length*cw+8;
+    const a=0.15+0.7*r.crossPct/maxPct;
+    ctx.fillStyle=r.cross>0?`rgba(255,92,92,${a.toFixed(3)})`:"rgba(255,255,255,0.035)";ctx.fillRect(sx,y,sumW-4,BAR_H);
+    ctx.fillStyle=r.cross>0&&a>0.5?"#0d0e11":"#dde0ea";ctx.font="600 10px Inter,sans-serif";ctx.textAlign="center";
+    ctx.fillText(r.grp?`${fmt(r.cross)} · ${r.crossPct.toFixed(0)}%`:"—",sx+(sumW-4)/2,y+BAR_H/2);
+    canvas._hoverRows.push({x:sx,y,w:sumW,h:BAR_H,row:{r,col:{key:"__sum",label:"Cross total"},name:r.name}});
+    ctx.textAlign="left";
+    drawRowLabel(ctx,(r.myN?`G${r.myN} `:"")+r.name,"Priest",PAD,y,BAR_H);
+  });
+}
+function renderCrossRenew(rolesIn){
+  const r=cachedReport;const sec=document.getElementById("section-crossrenew");
+  if(!r||!r.crossheal||!sec)return;
+  const x=r.crossheal;
+  if(!x.renewByFight){sec.style.display="none";return;}
+  sec.style.display="block";
+  const roles=rolesIn||xhRoles(x,xhAggregate((r.allFights||[]).map(f=>f.id)));
+  const num=xhGroupNumbers(x,roles);
+  // columns G1..G8 (only those that exist) + Tanks (+ "?" if anything unplaced)
+  const byN={};Object.entries(num).forEach(([gid,n])=>{(byN[n]=byN[n]||[]).push(Number(gid));});
+  const memb=n=>{const out=[];(byN[n]||[]).forEach(gid=>{if(gid===XH_G7)out.push(...(roles.unplaced||[]));else out.push(...(x.groups[gid]||[]).filter(m=>!roles.tanks.has(m)));});return out.sort();};
+  const subOf=n=>{if(n===1)return"Tank";if(n===7)return"Casters";const gid=(byN[n]||[])[0];const pr=(x.groups[gid]||[]).find(m=>x.cls[m]==="Priest");return pr||"";};
+  const cols=[];
+  for(let n=1;n<=9;n++){if(byN[n]&&(n!==7||memb(7).length))cols.push({key:"G"+n,label:n===9?"G?":"G"+n,sub:subOf(n),members:memb(n)});}
+  cols.push({key:"T",label:"Tanks",sub:"",members:[...roles.tanks].sort()});
+  const sel=document.getElementById("crossrenew-boss-sel");const bv=sel?sel.value:"all";
+  setBossOnlyTitle("boss-title-crossrenew","Bosses Only",r.bossFights||[],bv);
+  const all=crossRenewData((r.allFights||[]).map(f=>f.id),roles,num);
+  const boss=crossRenewData(healCdFightIds("boss",bv),roles,num);
+  const trash=crossRenewData(healCdFightIds("trash"),roles,num);
+  const extra=[...new Set([...all,...boss,...trash].flatMap(rw=>Object.keys(rw.cells)).filter(k=>k==="?"))];
+  const cols2=extra.length?[...cols,{key:"?",label:"?",sub:"no group",members:[]}]:cols;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    drawCrossRenewCanvas("chart-crossrenew-all",all,cols2);drawCrossRenewCanvas("chart-crossrenew-boss",boss,cols2);drawCrossRenewCanvas("chart-crossrenew-trash",trash,cols2);
+  }));
 }
 
 // ═══ Shared raid header ══════════════════════════════════════════════════════
@@ -11005,6 +11406,22 @@ function renderCrossheal(){
 // flasks and gear fill in as soon as the one whole-log combatantinfo request
 // returns (both tabs then reuse that same cached request).
 let raidHead=null,raidHeadRange=null;
+const RH_TOG_KEY="encore_raidhead_toggles";
+function raidHeadToggles(){try{const v=JSON.parse(localStorage.getItem(RH_TOG_KEY)||"{}");return{comp:!!v.comp,gear:!!v.gear};}catch(e){return{comp:false,gear:false};}}
+function applyRaidHeadToggles(t){
+  t=t||raidHeadToggles();const h=document.getElementById("raid-head");if(!h)return;
+  h.classList.toggle("show-comp",t.comp);h.classList.toggle("show-gear",t.comp&&t.gear);
+  const bc=document.getElementById("rh-tog-comp"),bg=document.getElementById("rh-tog-gear");
+  if(bc){bc.classList.toggle("on",t.comp);bc.textContent=(t.comp?"▾":"▸")+" Composition"+(raidHead?` (${raidHead.players.length})`:"");}
+  if(bg){bg.classList.toggle("on",t.comp&&t.gear);bg.innerHTML=(t.comp&&t.gear?"▾":"▸")+" Talents, flasks &amp; gear";}
+}
+function toggleRaidHead(which){
+  const t=raidHeadToggles();
+  if(which==="comp"){t.comp=!t.comp;}
+  else{const on=t.comp&&t.gear;t.gear=!on;if(t.gear)t.comp=true;}
+  try{localStorage.setItem(RH_TOG_KEY,JSON.stringify(t));}catch(e){}
+  applyRaidHeadToggles(t);
+}
 const RAID_CLASS_ORDER=["Warrior","Rogue","Hunter","Mage","Warlock","Priest","Druid","Paladin","Shaman"];
 function raidClassColor(c){return(typeof CLASS_COLORS!=="undefined"&&CLASS_COLORS[c])||(typeof dpsClassColor==="function"&&dpsClassColor(c))||"var(--text)";}
 function renderRaidHead(code,title,fightsIn,players,opts={}){
@@ -11026,6 +11443,9 @@ function renderRaidHead(code,title,fightsIn,players,opts={}){
     `<span>Boss time: <strong>${mins(boss)} min</strong></span>`+
     `<span>Trash time: <strong>${mins(trash)} min</strong></span>`;
   const byCls={};ppl.forEach(p=>{(byCls[p.type]=byCls[p.type]||[]).push(p.name);});
+  {const cs=document.getElementById("raid-comp-summary");
+   if(cs)cs.innerHTML=RAID_CLASS_ORDER.filter(c=>byCls[c]).map(c=>`<span style="color:${raidClassColor(c)}">${c}s<b>${byCls[c].length}</b></span>`).join("");}
+  applyRaidHeadToggles();
   document.getElementById("raid-roster").innerHTML=RAID_CLASS_ORDER.filter(c=>byCls[c]).map(c=>{
     const col=raidClassColor(c);
     return `<div class="rr-row"><span class="rr-cls" style="color:${col}">${c}s ${byCls[c].length}</span>`+
