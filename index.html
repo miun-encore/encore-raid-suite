@@ -79,6 +79,12 @@ main{padding:1rem 44px 1rem 1rem;width:100%;max-width:1600px;margin:0 auto;overf
 .raw-btn:hover{border-color:var(--gold);}
 .raw-btn.primary{background:var(--gold);color:#0d0e11;border-color:var(--gold);}
 .raw-msg{font-size:11px;}
+.pi-filters{display:flex;flex-direction:column;gap:5px;margin:2px 0 10px;}
+.pi-frow{display:flex;flex-wrap:wrap;align-items:center;gap:4px;}
+.pi-frow>b{font:700 9.5px Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);min-width:58px;}
+.pi-chip{background:transparent;border:1px solid var(--border);color:var(--muted);font:600 10.5px Inter,sans-serif;padding:2px 8px;border-radius:999px;cursor:pointer;white-space:nowrap;opacity:.45;}
+.pi-chip.on{opacity:1;border-color:currentColor;}
+.pi-chip.reset{opacity:1;color:var(--muted);border-style:dashed;}
 .sec-nav{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 14px;padding:8px 0 10px;border-bottom:1px solid var(--border);}
 .sec-nav:empty{display:none;}
 .sec-chip{background:var(--panel,#16171c);border:1px solid var(--border);color:var(--muted);font:600 11px Inter,sans-serif;padding:4px 10px;border-radius:6px;cursor:pointer;white-space:nowrap;}
@@ -93,6 +99,7 @@ main{padding:1rem 44px 1rem 1rem;width:100%;max-width:1600px;margin:0 auto;overf
 .rh-chips span{white-space:nowrap;font-weight:600;}
 .rh-chips span b{color:var(--muted);font-weight:500;margin-left:3px;}
 .raid-head:not(.show-comp) #raid-roster{display:none;}
+.raid-head:not(.show-tanks) #tanks-list{display:none!important;}
 .raid-head.show-comp .rh-chips{display:none;}
 .raid-head:not(.show-gear) #raid-roster .tal,.raid-head:not(.show-gear) #raid-roster .flask-pill,.raid-head:not(.show-gear) #raid-roster .gear-btn{display:none!important;}
 #report-meta,#dps-report-meta{display:none!important;}
@@ -332,6 +339,18 @@ main{padding:1rem 44px 1rem 1rem;width:100%;max-width:1600px;margin:0 auto;overf
 /* ── Tooltip ── */
 .tip{position:fixed;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r);padding:10px 13px;pointer-events:none;z-index:9999;display:none;min-width:155px;max-width:calc(100vw - 24px);box-shadow:0 8px 24px rgba(0,0,0,.6);}
 .hover-tip{position:fixed;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;pointer-events:none;z-index:9999;display:none;max-width:min(280px,calc(100vw - 24px));box-shadow:0 8px 24px rgba(0,0,0,.6);font-size:11px;line-height:1.55;}
+.hover-tip .ht-click{margin-top:6px;padding-top:4px;border-top:1px solid rgba(255,255,255,.08);font-size:9.5px;color:#7c8296;font-style:italic;}
+#tip-overlay .how-box{max-width:620px;}
+#tip-overlay .tip-ctx{font-size:10.5px;color:var(--muted);letter-spacing:.03em;margin:0 28px 10px 0;text-transform:uppercase;font-weight:600;}
+#tip-overlay .tip-detail{position:static;display:block;pointer-events:auto;max-width:none;box-shadow:none;border:none;background:transparent;padding:0;font-size:13px;line-height:1.65;user-select:text;}
+#tip-overlay .tip-detail .ht-title{font-size:16px;margin-bottom:10px;}
+#tip-overlay .tip-detail .ht-row,#tip-overlay .tip-detail .ht-row3{padding:2px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+#tip-overlay .tip-detail .ht-row3>span:first-child{white-space:normal;overflow:visible;}
+#tip-overlay .tip-detail .ht-row3>span:nth-child(2){width:80px;}
+#tip-overlay .tip-detail .ht-row3>span:nth-child(3),#tip-overlay .tip-detail .ht-row3>strong{width:auto;min-width:56px;}
+#tip-overlay .tip-detail .ht-note{font-size:12px;margin-top:8px;white-space:normal;}
+#tip-overlay .tip-x{position:absolute;top:10px;right:12px;background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;}
+#tip-overlay .tip-x:hover{color:var(--text);}
 .hover-tip .ht-title{font-family:'Cinzel',serif;font-size:12px;font-weight:600;color:var(--gold);margin-bottom:5px;}
 .hover-tip .ht-row{display:flex;justify-content:space-between;gap:14px;color:#c8ccdc;}
 .hover-tip .ht-row strong{color:var(--text);font-weight:600;}
@@ -534,6 +553,7 @@ select{background-image:linear-gradient(45deg,transparent 50%,#8890a8 50%),linea
     <button class="btn-gold" id="dps-load-btn" onclick="dpsLoad()">Load</button>
   </div>
   
+  <button class="how-btn" id="raw-fetch-btn" style="margin-bottom:0;padding:5px 10px;display:none;flex-shrink:0;border-color:var(--gold);color:var(--gold);" onclick="rawFetchRemaining()" title="This log was loaded from pasted raw data. These requests weren't in it — fetch them from WarcraftLogs (needs your API key)."></button>
   <button class="how-btn" id="fetch-all-btn" style="margin-bottom:0;padding:5px 10px;display:none;flex-shrink:0;" onclick="fetchAllRemainingData()" title="Pre-fetch every per-boss-fight tooltip data set (target breakdown, dispel recipients, trinket/PI timestamps) so nothing shows &quot;Loading…&quot; and switching between individual boss fights is instant">⏳ Fetch remaining data</button>
   <div class="key-box" id="key-box" title="Your WarcraftLogs v1 API key (WCL account → API Clients). Saved in this browser only. Press Enter or click away to save and re-check.">
     <label for="key-input">🔑 Key</label>
@@ -632,6 +652,7 @@ document.addEventListener("click",e=>{
     <div class="rh-ctrl">
       <button type="button" class="rh-tog" id="rh-tog-comp" onclick="toggleRaidHead('comp')" title="Show every raider, grouped by class">▸ Composition</button>
       <button type="button" class="rh-tog" id="rh-tog-gear" onclick="toggleRaidHead('gear')" title="Show talents, flask and gear / enchant check per raider">▸ Talents, flasks &amp; gear</button>
+      <button type="button" class="rh-tog" id="rh-tog-tanks" onclick="toggleRaidHead('tanks')" title="Show the tanks (Tank 1, Tank 2, …)">▸ Tanks</button>
       <span class="rh-chips" id="raid-comp-summary"></span>
     </div>
     <div class="raid-roster" id="raid-roster"></div>
@@ -763,8 +784,11 @@ document.addEventListener("click",e=>{
 
     <!-- Row 3: Tank Sitting vs True Activity (scatter, y=x reference) -->
     <div id="section-tankact" style="display:none;margin-top:1.5rem;">
-      <div class="row-label">Tank Sitting vs True Activity
+      <div class="row-label dps-row-flex">Tank Sitting vs True Activity
         <span class="row-sub">How much of our overall pace actually went to healing tanks. The closer you sit to that dashed line, the more your attention was on tanks. Priests in particular can raise their activity by showing tanks more love, especially during trash pulls. Y: Tank Sitting nCPM (casts landed directly on the raid's tanks) · X: True Activity nCPM (overall pace) · dashed line is y = x</span>
+        <span class="view-toggle dps-util-toggle tankact-toggle" title="Tank sitting as % of all heals (tank nCPM ÷ overall nCPM) or as nCPM">
+          <button type="button" data-m="pct" class="active" onclick="setTankActMode('pct')">% of all heals</button><button type="button" data-m="ncpm" onclick="setTankActMode('ncpm')">nCPM</button>
+        </span>
       </div>
       <div class="panels">
         <div class="panel" id="panel-tankact-all" onclick="togglePanel('panel-tankact-all')">
@@ -940,8 +964,8 @@ document.addEventListener("click",e=>{
           <div class="panel-hdr" style="gap:8px;">
             <div class="panel-title" style="margin-bottom:0;">Bosses + Trash</div>
             <span class="view-toggle" onclick="event.stopPropagation()" style="flex-shrink:0;display:inline-flex;border:1px solid rgba(255,255,255,0.12);border-radius:6px;overflow:hidden;">
-              <button type="button" id="tank-toggle-total-all" class="view-toggle-btn active" onclick="setTankViewMode('ncpm')" style="border:none;cursor:pointer;padding:3px 10px;font-size:10px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.03em;background:var(--gold);color:#0d0e13;">Total</button>
-              <button type="button" id="tank-toggle-pct-all" class="view-toggle-btn" onclick="setTankViewMode('pct')" style="border:none;cursor:pointer;padding:3px 10px;font-size:10px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.03em;background:transparent;color:var(--muted);">Percentage</button>
+              <button title="Tank heals ÷ all heals (nCPM on tanks ÷ overall nCPM)" type="button" id="tank-toggle-pct-all" class="view-toggle-btn active" onclick="setTankViewMode('pct')" style="border:none;cursor:pointer;padding:3px 10px;font-size:10px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.03em;background:var(--gold);color:#0d0e13;">% of all heals</button>
+              <button type="button" id="tank-toggle-total-all" class="view-toggle-btn" onclick="setTankViewMode('ncpm')" style="border:none;cursor:pointer;padding:3px 10px;font-size:10px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.03em;background:transparent;color:var(--muted);">nCPM</button>
             </span>
           </div>
           <div class="bottom-chart-wrap"><canvas id="chart-tank-all"></canvas></div>
@@ -950,8 +974,8 @@ document.addEventListener("click",e=>{
           <div class="panel-hdr" style="gap:8px;">
             <div class="panel-title" id="boss-title-tank" style="margin-bottom:0;">Bosses Only</div>
             <span class="view-toggle" onclick="event.stopPropagation()" style="flex-shrink:0;display:inline-flex;border:1px solid rgba(255,255,255,0.12);border-radius:6px;overflow:hidden;">
-              <button type="button" id="tank-toggle-total-boss" class="view-toggle-btn active" onclick="setTankViewMode('ncpm')" style="border:none;cursor:pointer;padding:3px 10px;font-size:10px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.03em;background:var(--gold);color:#0d0e13;">Total</button>
-              <button type="button" id="tank-toggle-pct-boss" class="view-toggle-btn" onclick="setTankViewMode('pct')" style="border:none;cursor:pointer;padding:3px 10px;font-size:10px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.03em;background:transparent;color:var(--muted);">Percentage</button>
+              <button title="Tank heals ÷ all heals (nCPM on tanks ÷ overall nCPM)" type="button" id="tank-toggle-pct-boss" class="view-toggle-btn active" onclick="setTankViewMode('pct')" style="border:none;cursor:pointer;padding:3px 10px;font-size:10px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.03em;background:var(--gold);color:#0d0e13;">% of all heals</button>
+              <button type="button" id="tank-toggle-total-boss" class="view-toggle-btn" onclick="setTankViewMode('ncpm')" style="border:none;cursor:pointer;padding:3px 10px;font-size:10px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.03em;background:transparent;color:var(--muted);">nCPM</button>
             </span>
           </div>
           <div class="bottom-chart-wrap"><canvas id="chart-tank-boss"></canvas></div>
@@ -961,8 +985,8 @@ document.addEventListener("click",e=>{
           <div class="panel-hdr" style="gap:8px;">
             <div class="panel-title" style="margin-bottom:0;">Trash Only</div>
             <span class="view-toggle" onclick="event.stopPropagation()" style="flex-shrink:0;display:inline-flex;border:1px solid rgba(255,255,255,0.12);border-radius:6px;overflow:hidden;">
-              <button type="button" id="tank-toggle-total-trash" class="view-toggle-btn active" onclick="setTankViewMode('ncpm')" style="border:none;cursor:pointer;padding:3px 10px;font-size:10px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.03em;background:var(--gold);color:#0d0e13;">Total</button>
-              <button type="button" id="tank-toggle-pct-trash" class="view-toggle-btn" onclick="setTankViewMode('pct')" style="border:none;cursor:pointer;padding:3px 10px;font-size:10px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.03em;background:transparent;color:var(--muted);">Percentage</button>
+              <button title="Tank heals ÷ all heals (nCPM on tanks ÷ overall nCPM)" type="button" id="tank-toggle-pct-trash" class="view-toggle-btn active" onclick="setTankViewMode('pct')" style="border:none;cursor:pointer;padding:3px 10px;font-size:10px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.03em;background:var(--gold);color:#0d0e13;">% of all heals</button>
+              <button type="button" id="tank-toggle-total-trash" class="view-toggle-btn" onclick="setTankViewMode('ncpm')" style="border:none;cursor:pointer;padding:3px 10px;font-size:10px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.03em;background:transparent;color:var(--muted);">nCPM</button>
             </span>
           </div>
           <div class="bottom-chart-wrap"><canvas id="chart-tank-trash"></canvas></div>
@@ -1097,6 +1121,9 @@ document.addEventListener("click",e=>{
           <button type="button" id="trinket-toggle-all" class="view-toggle-btn active" onclick="setTrinketViewMode('all')" style="border:none;cursor:pointer;padding:3px 10px;font-size:10px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.03em;background:var(--gold);color:#0d0e13;text-transform:none;">All</button>
           <button type="button" id="trinket-toggle-pi" class="view-toggle-btn" onclick="setTrinketViewMode('pi')" style="border:none;cursor:pointer;padding:3px 10px;font-size:10px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.03em;background:transparent;color:var(--muted);text-transform:none;">PI Only</button>
         </span>
+        <span class="view-toggle pi-detail-toggle" title="PI Overview = the bar charts · PI Detailed = timeline of who Power Infused whom in each boss fight, with timestamps" style="flex-shrink:0;display:inline-flex;border:1px solid rgba(255,255,255,0.12);border-radius:6px;overflow:hidden;">
+          <button type="button" id="pi-mode-overview" onclick="setPiDetailMode('overview')" style="border:none;cursor:pointer;padding:3px 10px;font-size:10px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.03em;text-transform:none;background:var(--gold);color:#0d0e13;">PI Overview</button><button type="button" id="pi-mode-detailed" onclick="setPiDetailMode('detailed')" style="border:none;cursor:pointer;padding:3px 10px;font-size:10px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.03em;text-transform:none;background:transparent;color:var(--muted);">PI Detailed</button>
+        </span>
         <span class="view-toggle" title="Uses = total activations · Per min = uses per minute of fight time in that scope" style="flex-shrink:0;display:inline-flex;border:1px solid rgba(255,255,255,0.12);border-radius:6px;overflow:hidden;">
           <button type="button" id="trinket-rate-uses" class="view-toggle-btn active" onclick="setTrinketRateMode('uses')" style="border:none;cursor:pointer;padding:3px 10px;font-size:10px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.03em;text-transform:none;background:var(--gold);color:#0d0e13;">Uses</button>
           <button type="button" id="trinket-rate-upm" class="view-toggle-btn" onclick="setTrinketRateMode('upm')" style="border:none;cursor:pointer;padding:3px 10px;font-size:10px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.03em;text-transform:none;background:transparent;color:var(--muted);">Per min</button>
@@ -1118,12 +1145,43 @@ document.addEventListener("click",e=>{
           <div class="bottom-chart-wrap"><canvas id="chart-trinkets-trash"></canvas></div>
         </div>
       </div>
+      <div id="pi-detail" style="display:none;">
+        <div class="dispel-legend" id="pi-detail-legend"></div>
+        <div class="panels" style="grid-template-columns:1fr;">
+          <div class="panel" style="cursor:default;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:.5rem;">
+              <div class="panel-title">Power Infusion timeline — boss fights</div>
+              <span style="margin-left:auto;display:inline-flex;border:1px solid rgba(255,255,255,0.12);border-radius:6px;overflow:hidden;">
+                <button type="button" id="pi-mode-overview-2" onclick="setPiDetailMode('overview')" style="border:none;cursor:pointer;padding:3px 10px;font-size:10px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.03em;text-transform:none;background:transparent;color:var(--muted);">PI Overview</button><button type="button" id="pi-mode-detailed-2" onclick="setPiDetailMode('detailed')" style="border:none;cursor:pointer;padding:3px 10px;font-size:10px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:.03em;text-transform:none;background:var(--gold);color:#0d0e13;">PI Detailed</button>
+              </span>
+            </div>
+            <div class="pi-filters" id="pi-filters"></div>
+            <div class="bottom-chart-wrap"><canvas id="chart-pitimeline"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Mind control timeline (Faerlina + Razuvious) ── -->
+    <div id="section-raz" style="display:none;margin-top:1.5rem;">
+      <div class="row-label">Mind Control
+        <span class="row-sub">Every priest mind control on Grand Widow Faerlina (Naxxramas Worshippers → Widow's Embrace) and Instructor Razuvious (Death Knight Understudies → Shield Wall / Taunt): who controlled which mark, for how long, what they used and when — plus each controller's spell hit from gear that pull.</span>
+      </div>
+      <div class="dispel-legend" id="raz-legend"></div>
+      <div class="panels" style="grid-template-columns:1fr;">
+        <div class="panel" style="cursor:default;">
+          <div class="panel-title" style="margin-bottom:.5rem;">Mind control timeline — Faerlina &amp; Razuvious pulls</div>
+          <div class="pi-filters" id="raz-filters"></div>
+          <div class="bottom-chart-wrap"><canvas id="chart-raz"></canvas></div>
+        </div>
+      </div>
     </div>
 
     <!-- ── Priest crosshealing (inferred raid groups) ── -->
     <div id="section-crossheal" style="display:none;margin-top:1.5rem;">
-      <div class="row-label">Priest Crosshealing
-        <span class="row-sub">Each priest's effective healing: own group (green, from the left) vs crosshealing (red, from the right). Tanks are left out, except tanks in the priest's own Prayer of Healing group. The Group 2 priest's group includes the tank group's paladin; the Group 8 priest's includes Group 7 (casters). Groups are worked out from party-only buffs (Prayer of Fortitude / Spirit / Shadow Protection, Arcane Brilliance, Gift of the Wild, Prayer of Healing, Battle Shout, auras, totems, Trueshot, Leader of the Pack, Blood Pact) — the combat log never records raid groups.</span>
+      <div class="row-label dps-row-flex">Priest &amp; Paladin Crosshealing
+        <span class="row-sub">Effective healing per priest (G2 → G8) and paladin (rows) on each group (columns). <b style="color:#52d273">Green</b> = own group (G2 priest also G1, G8 priest also G7), <b style="color:#ff5c5c">red</b> = crosshealing (darker = more), tanks in their own column. Right column: crosshealing and its share. Groups come from party-only buffs — open <b>Inferred groups</b> to check them.</span>
+        <span class="view-toggle dps-util-toggle crosspct-toggle" title="Amount = healing / renews in each cell · Percentage = share of that healer's row"><button type="button" data-p="0" class="active" onclick="setCrossPctMode(false)">Amount</button><button type="button" data-p="1" onclick="setCrossPctMode(true)">Percentage</button></span>
       </div>
       <div class="dispel-legend" id="crossheal-legend"></div>
       <div class="crossheal-groups" id="crossheal-groups"></div>
@@ -1148,6 +1206,7 @@ document.addEventListener("click",e=>{
     <div id="section-crossrenew" style="display:none;margin-top:1.5rem;">
       <div class="row-label dps-row-flex">Priest Cross-Renews
         <span class="row-sub">Renews per priest (rows, G2 → G8 priest) on each group (columns). <b style="color:#52d273">Green</b> = own group, <b style="color:#ff5c5c">red</b> = cross-renews (darker = more). Tanks don't count as cross. G3–G6 order is by priest name — see the guide.</span>
+        <span class="view-toggle dps-util-toggle crosspct-toggle" title="Amount = healing / renews in each cell · Percentage = share of that healer's row"><button type="button" data-p="0" class="active" onclick="setCrossPctMode(false)">Amount</button><button type="button" data-p="1" onclick="setCrossPctMode(true)">Percentage</button></span>
         <span class="view-toggle dps-util-toggle crossrenew-toggle" title="Renews = Renew casts (applied or refreshed) · Healing = effective Renew healing">
           <button type="button" data-cr="n" class="active" onclick="setCrossRenewMode('n')">Renews</button><button type="button" data-cr="eff" onclick="setCrossRenewMode('eff')">Healing</button>
         </span>
@@ -1175,6 +1234,9 @@ document.addEventListener("click",e=>{
         <span class="row-sub">Instant healer cooldowns — Inner Focus, Divine Favor, Nature's Swiftness, Swiftmend, Lay on Hands, Innervate, Mana Tide Totem, Divine Intervention, Blessings of Protection / Freedom / Sacrifice, and Judgements of Light / Wisdom (counted when the judgement lands on the target). Hover to see which spell each Inner Focus / Divine Favor / Nature's Swiftness was paired with. Mana saved by Inner Focus (and paladin Illumination refunds) is taken off Estimated Mana Spent and every mana-based chart. "Fear Ward" shows Fear Wards alone: cast vs actually consumed by a fear, and who received them.</span>
         <span class="view-toggle dps-util-toggle healcd-toggle" title="Cooldowns · Fear Ward only">
           <button type="button" data-mode="cds" class="active" onclick="setHealCdMode('cds')">Cooldowns</button><button type="button" data-mode="fw" onclick="setHealCdMode('fw')">Fear Ward</button>
+        </span>
+        <span class="view-toggle dps-util-toggle healcd-sm-toggle" title="Swiftmend is used far more often than the other cooldowns and swamps the chart — off by default">
+          <button type="button" id="healcd-sm-btn" onclick="toggleHealCdSwiftmend()">+ Swiftmend</button>
         </span>
       </div>
       <div class="dispel-legend" id="healcd-legend"></div>
@@ -1247,6 +1309,11 @@ document.addEventListener("click",e=>{
     <span class="raw-msg" id="raw-msg"></span>
   </div>
 </main>
+<div class="how-overlay" id="tip-overlay" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="how-box"><button type="button" class="tip-x" onclick="document.getElementById('tip-overlay').classList.remove('show')" title="Close (Esc)">×</button>
+    <div class="tip-ctx"></div><div class="hover-tip tip-detail"></div>
+  </div>
+</div>
 <div class="how-overlay" id="raw-overlay" onclick="if(event.target===this)this.classList.remove('show')">
   <div class="how-box" style="max-width:640px;">
     <div class="how-title" style="font-family:'Cinzel',serif;color:var(--gold);font-weight:600;margin-bottom:.5rem;">Paste raw data</div>
@@ -2179,11 +2246,16 @@ function clearV1Cache(){v1Cache.clear();v1CacheHits=0;if(rawSeed)rawSeed.forEach
 // Cache keys leave the API key out, so raw data copied by one person / key is
 // reusable by anyone (and the key never ends up in the copied string).
 function v1Key(path,params){const q={...params};delete q.api_key;return`${V1}${path}?${new URLSearchParams(q)}`;}
+// After "Paste raw data" the tool runs offline: anything not in the pasted
+// data is noted (rawMissing) instead of fetched, and the header offers
+// "Fetch remaining data" to go get exactly those.
+let rawOffline=false,rawCode=null;const rawMissing=new Set();
 function v1(path,params={}){
   const key=v1Key(path,params);
   params.api_key=getApiKey();
   const url=`${V1}${path}?${new URLSearchParams(params)}`;
   if(v1Cache.has(key)){v1CacheHits++;renderApiMeter();return v1Cache.get(key);}
+  if(rawOffline){rawMissing.add(key);try{updateRawFetchBtn();}catch(e){}return Promise.reject(new Error("not in the pasted raw data — use “Fetch remaining data”"));}
   const p=v1Fetch(url);
   v1Cache.set(key,p);
   p.catch(()=>{if(v1Cache.get(key)===p)v1Cache.delete(key);});
@@ -2363,6 +2435,25 @@ function collapseZeroRows(rows,isZero,canvas){
 function othersTipHtml(names){
   return `<div class="ht-title">Others — nothing recorded here</div>`+names.slice().sort((a,b)=>a.localeCompare(b)).map(n=>`<div class="ht-row"><span>${typeof htName==="function"?htName(n,(typeof allClsByName==="function"?allClsByName():{})[n]):n}</span><strong>0</strong></div>`).join("");
 }
+// Click a bar → the same breakdown as its tooltip, in a larger pop-up that
+// stays open, can be scrolled/selected, and lists everything (tooltips cap
+// long lists; tipN() lifts those caps while the pop-up is built).
+let tipDetailOpen=false;
+function tipN(n){return tipDetailOpen?Infinity:n;}
+function openTipDetail(canvas,row){
+  const fn=canvas&&canvas._hoverFn;if(!fn||!row)return;
+  let html="";tipDetailOpen=true;try{html=fn(row)||"";}catch(e){console.warn(e);}finally{tipDetailOpen=false;}
+  if(!html)return;
+  const ov=document.getElementById("tip-overlay");if(!ov)return;
+  const sec=canvas.closest("[id^=section-],.dps-section");
+  const secT=sec?((sec.querySelector(".row-label")||sec.firstElementChild||{}).firstChild||{}).textContent||"":"";
+  const pan=canvas.closest(".panel");const panT=pan?((pan.querySelector(".panel-title")||{}).textContent||""):"";
+  const metric=pan?((pan.querySelector(".panel-metric")||{}).textContent||""):"";
+  ov.querySelector(".tip-ctx").textContent=[secT.trim(),panT.trim(),metric.trim()].filter(Boolean).join(" · ");
+  ov.querySelector(".tip-detail").innerHTML=html;
+  ov.classList.add("show");hideHoverTip();
+}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){const o=document.getElementById("tip-overlay");if(o)o.classList.remove("show");}});
 function attachBarHover(canvasId,contentFn){
   {const inner=contentFn;contentFn=row=>{
     if(row&&(row._others||/^Others \(\d+\)$/.test(row.name||""))){const c=document.getElementById(canvasId);const list=row._others||(c&&c._othersNames)||[];return othersTipHtml(list);}
@@ -2387,13 +2478,15 @@ function attachBarHover(canvasId,contentFn){
   canvas.addEventListener("mousemove",(e)=>{
     lastHover={canvas,x:e.clientX,y:e.clientY};
     const hit=hitTest(e.clientX,e.clientY);
+    canvas.style.cursor=hit?"pointer":"";
     if(!hit){hideHoverTip();return;}
     const html=contentFn(hit.row);
     if(!html){hideHoverTip();return;}
-    showHoverTip(html,e.clientX,e.clientY);
+    showHoverTip(html+`<div class="ht-click">Click for details</div>`,e.clientX,e.clientY);
     scheduleHoverRefresh(html);
   });
   canvas.addEventListener("mouseleave",hideHoverTip);
+  canvas.addEventListener("click",e=>{const hit=hitTest(e.clientX,e.clientY);if(!hit)return;e.stopPropagation();openTipDetail(canvas,hit.row);});
   // Touch devices (iPhone/Android/tablet) never fire mousemove, so without
   // this the bar/spell/mana tooltips — including the overheal breakdown —
   // were simply unreachable by tap. Tapping a row now shows its tooltip;
@@ -2488,11 +2581,11 @@ function initBossWheel(el,onPick){
   el.addEventListener("wheel",e=>{
     e.preventDefault();e.stopPropagation();
     const now=performance.now();
-    if(now-lastEvt>260)acc=0;
+    if(now-lastEvt>220)acc=0;
     lastEvt=now;
-    if(now-lastStep<200)return;
     acc+=e.deltaMode===1?e.deltaY*33:e.deltaMode===2?e.deltaY*300:e.deltaY;
-    if(Math.abs(acc)<45)return;
+    if(now-lastStep<90)return;
+    if(Math.abs(acc)<28)return;
     const dir=Math.sign(acc);acc=0;lastStep=now;
     const items=[...el.querySelectorAll(".boss-btn")];if(!items.length)return;
     let i=el._wheelTarget!=null?el._wheelTarget:items.indexOf(center());
@@ -3184,7 +3277,7 @@ function drawChartCore(canvasId,statsMap,healers,H,isExpanded,hr){
     const col=isSel?"#e8c04d":(CLASS_COLORS[p.cls]||"#fff");
     ctx.beginPath();ctx.arc(px,py,isSel?8:6,0,Math.PI*2);
     ctx.fillStyle=col+(isSel?"dd":"bb");ctx.fill();
-    ctx.strokeStyle=col;ctx.lineWidth=isSel?2.5:1.5;ctx.stroke();
+    ctx.strokeStyle="rgba(255,255,255,0.95)";ctx.lineWidth=isSel?2:1;ctx.stroke();
   });
 
   // Label layout is computed here (not on hover) so the axes are already
@@ -3566,6 +3659,7 @@ async function runStage2Enrichment(code,title,healers,allR,friendlies,bossFights
   }});
 
   jobs.push({label:"Crosshealing",run:()=>fetchAndDrawCrossheal(code,allFights,friendlies)});
+  if((bossFights||[]).some(f=>mcCfg(f)))jobs.push({label:"Mind control",run:()=>fetchRazMc(code,bossFights,friendlies,allFights)});
 
   const results=await Promise.allSettled(jobs.map(runTrackedJob));
   stage2Done=true;
@@ -3839,6 +3933,7 @@ function buildExportPayload(){
     trinketsAgg:r.trinketsAgg||{all:{},boss:{},trash:{}},
     trinketsClsByName:r.trinketsClsByName||{},
     trinketsIdToName:r.trinketsIdToName||{},
+    piByFight:r.piByFight||null,piSpores:r.piSpores||null,razMc:r.razMc||null,mcHit:r.mcHit||null,piPyro:r.piPyro||null,
     tanks:r.tanks||[],
     tankRows:r.tankRows||{all:[],boss:[],trash:[]},
     // BFD Crit Score — biggest single cast per healer, fetched live via raw
@@ -3905,7 +4000,7 @@ async function applyImportedData(data){
     bossCacheByFight,tankBossCacheByFight,ehBossCacheByFight,manaBossCacheByFight,
     ehStatsBossCacheByFight,mobilityFightBdCache:mMobilityBd,dispelsBossCacheByFight,
     dispelFightRecipCache:mDispelRecip,dispelsEffectiveBossCache:mDispelEff,
-    trinketsBossCacheByFight,trinketFightUseCache:mTrinketUse,healCdByFight,illumByFight,drinkAgg,rosterInfo,drinkDiag,crossheal}=data;
+    trinketsBossCacheByFight,trinketFightUseCache:mTrinketUse,healCdByFight,illumByFight,drinkAgg,rosterInfo,drinkDiag,crossheal,piByFight,piSpores,razMc,mcHit,piPyro}=data;
   const healerSet=new Set(healers.map(h=>h.name));
   stage2Done=true;jobState={};biggestFightCache={}; // a snapshot has no background jobs left to wait for
   const eh=ehEntries||{all:[],boss:[],trash:[]};
@@ -3919,7 +4014,7 @@ async function applyImportedData(data){
     friendlies:friendlies||[],allFights:allFights||[],rawTanks:rawTanks||[],
     targetBreakdown:targetBreakdown||null,
     ehEntries:eh,dispelsAgg:da,dispelsClsByName:dispelsClsByName||{},
-    trinketsAgg:ta,trinketsClsByName:trinketsClsByName||{},trinketsIdToName:trinketsIdToName||{},
+    trinketsAgg:ta,trinketsClsByName:trinketsClsByName||{},trinketsIdToName:trinketsIdToName||{},piByFight:piByFight||null,piSpores:piSpores||null,razMc:razMc||null,mcHit:mcHit||null,piPyro:piPyro||null,
     tanks:tanks||[],tankRows:tr,tankHealers:healers,tankHealerSet:healerSet,
     // Per-panel fetch context — restoring these is what makes each boss
     // dropdown (EH/Mana/Dispels/Trinkets) actually respond instead of
@@ -4069,6 +4164,7 @@ async function applyImportedData(data){
     renderBFDCritScore(); // no-ops quietly if this snapshot predates biggestCast being saved
     renderUtilDmg();      // same for utility damage
     if(cachedReport&&cachedReport.biggestCast){renderBossButtons("bfd-boss-sel",cachedReport.bossFights||[],renderBFDCritScore,true);renderBossButtons("utildmg-boss-sel",cachedReport.bossFights||[],renderUtilDmg,true);}
+    if(razMc&&cachedReport){cachedReport.razMc=razMc;try{drawRazMc();}catch(e){console.warn(e);}}
     if(crossheal&&cachedReport){cachedReport.crossheal=crossheal;renderBossButtons("crossheal-boss-sel",cachedReport.bossFights||[],renderCrossheal,true);renderBossButtons("crossrenew-boss-sel",cachedReport.bossFights||[],renderCrossRenew,true);renderCrossheal();}
     if(healCdByFight&&cachedReport){
       cachedReport.healCdByFight=healCdByFight;
@@ -5294,7 +5390,7 @@ function drawEffScatterCore(canvasId,points,H,showLabels,isExpanded,hr){
     const col=isSel?"#e8c04d":(CLASS_COLORS[p.cls]||DISPEL_CASTER_COLORS[p.cls]||"#fff");
     ctx.beginPath();ctx.arc(px,py,isSel?8:6,0,Math.PI*2);
     ctx.fillStyle=col+(isSel?"dd":"bb");ctx.fill();
-    ctx.strokeStyle=col;ctx.lineWidth=isSel?2.5:1.5;ctx.stroke();
+    ctx.strokeStyle="rgba(255,255,255,0.95)";ctx.lineWidth=isSel?2:1;ctx.stroke();
     canvas._hoverRows.push({x:px-7,y:py-7,w:14,h:14,row:p});
   });
 
@@ -5334,12 +5430,17 @@ function drawEffScatterCore(canvasId,points,H,showLabels,isExpanded,hr){
 // same unit/scale — points above the line spend a larger share of their
 // total output on tanks than their overall pace alone would suggest, points
 // below spend comparatively less.
+// Y can read as % of 40 nCPM (default) — the same nCPM×1.5s/60 conversion as
+// the % row under the x-axis, so the chart's geometry doesn't change.
+let tankActMode="pct";
+function setTankActMode(m){tankActMode=m==="ncpm"?"ncpm":"pct";document.querySelectorAll(".tankact-toggle button").forEach(b=>b.classList.toggle("active",b.dataset.m===tankActMode));try{onHighlightChange();}catch(e){}}
 function tankActTipHtml(row){
   const pct=row.x>0?Math.min(100,(row.y/row.x)*100):0;
   return `<div class="ht-title">${htName(row.name,row.cls)}</div>`+
+    `<div class="ht-row"><span>Tank Sitting</span><strong>${round1(pct)}% of all heals</strong></div>`+
     `<div class="ht-row"><span>Tank Sitting nCPM</span><strong>${round1(row.y)}</strong></div>`+
     `<div class="ht-row"><span>True Activity nCPM</span><strong>${round1(row.x)}</strong></div>`+
-    `<div class="ht-row"><span>Tank Sitting %</span><strong>${round1(pct)}%</strong></div>`;
+    "";
 }
 function computeTankActPoints(tankRows,statsMap){
   statsMap=statsMap||{};
@@ -5348,6 +5449,41 @@ function computeTankActPoints(tankRows,statsMap){
     if(!s)return null;
     return{name:r.name,cls:r.cls,x:s.nCPM||0,y:r.nCPM||0};
   }).filter(Boolean);
+}
+// % view: Y = tank heals ÷ all heals (0–100%), X = True Activity nCPM.
+// The y=x line of the nCPM view becomes the 100% ceiling and the 70% / 20%
+// region edges become flat bands.
+function drawTankActPct(canvas,ctx,pointsIn,W,H,PAD,pw,ph,hr,bigDashLabel){
+  const points=pointsIn.map(p=>({p,x:p.x,pct:p.x>0?Math.min(100,p.y/p.x*100):0}));
+  const axMax=Math.max(1,Math.ceil(Math.max(...points.map(q=>q.x))*1.15*hr));
+  const toPx=(x,pct)=>({px:PAD.left+(x/axMax)*pw,py:PAD.top+(1-pct/100)*ph});
+  const band=(a,b,c)=>{const y1=PAD.top+(1-b/100)*ph,y2=PAD.top+(1-a/100)*ph;ctx.fillStyle=c;ctx.fillRect(PAD.left,y1,pw,y2-y1);};
+  band(70,100,"rgba(244,140,186,0.09)");band(20,70,"rgba(232,232,248,0.10)");band(0,20,"rgba(255,45,45,0.12)");
+  ctx.strokeStyle="rgba(255,255,255,0.04)";ctx.lineWidth=1;
+  const step=axMax>40?10:axMax>15?5:2;
+  for(let v=0;v<=axMax;v+=step){const x=PAD.left+(v/axMax)*pw;ctx.beginPath();ctx.moveTo(x,PAD.top);ctx.lineTo(x,PAD.top+ph);ctx.stroke();}
+  for(let q=0;q<=100;q+=10){const y=PAD.top+(1-q/100)*ph;ctx.beginPath();ctx.moveTo(PAD.left,y);ctx.lineTo(PAD.left+pw,y);ctx.stroke();}
+  ctx.save();ctx.strokeStyle="rgba(232,192,77,0.4)";ctx.lineWidth=1.4;ctx.setLineDash([5,4]);ctx.beginPath();ctx.moveTo(PAD.left,PAD.top+0.5);ctx.lineTo(PAD.left+pw,PAD.top+0.5);ctx.stroke();ctx.restore();
+  ctx.fillStyle="rgba(232,192,77,0.75)";ctx.font=bigDashLabel?"bold 14px Inter,sans-serif":"bold 12px Inter,sans-serif";ctx.textAlign="right";ctx.textBaseline="top";ctx.fillText("100% = every heal on a tank",PAD.left+pw-4,PAD.top+3);
+  ctx.strokeStyle="#3a3f50";ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(PAD.left,PAD.top);ctx.lineTo(PAD.left,PAD.top+ph);ctx.moveTo(PAD.left,PAD.top+ph);ctx.lineTo(PAD.left+pw,PAD.top+ph);ctx.stroke();
+  ctx.fillStyle="#c8ccdc";ctx.font="10px Inter,sans-serif";ctx.textAlign="center";ctx.textBaseline="top";
+  for(let v=0;v<=axMax;v+=step)ctx.fillText(v,PAD.left+(v/axMax)*pw,PAD.top+ph+5);
+  ctx.fillStyle="#9aa1ba";for(let v=0;v<=axMax;v+=step)ctx.fillText(((v*GCD/60)*100).toFixed(0)+"%",PAD.left+(v/axMax)*pw,PAD.top+ph+19);
+  ctx.fillStyle="#c8ccdc";ctx.textAlign="right";ctx.textBaseline="middle";
+  for(let q=0;q<=100;q+=10)ctx.fillText(q+"%",PAD.left-5,PAD.top+(1-q/100)*ph);
+  ctx.save();ctx.fillStyle="#dde0ea";ctx.font="600 11px Inter,sans-serif";ctx.textAlign="center";ctx.textBaseline="bottom";
+  ctx.fillText("True Activity nCPM",PAD.left+pw/2,H-4);ctx.translate(13,PAD.top+ph/2);ctx.rotate(-Math.PI/2);ctx.textBaseline="top";ctx.fillText("Tank Sitting · % of all heals",0,0);ctx.restore();
+  points.forEach(q=>{
+    const{px,py}=toPx(q.x,q.pct);const p=q.p;
+    const isSel=selectedHealer&&p.name===selectedHealer;
+    const col=isSel?"#e8c04d":(CLASS_COLORS[p.cls]||DISPEL_CASTER_COLORS[p.cls]||"#fff");
+    ctx.beginPath();ctx.arc(px,py,isSel?8:6,0,Math.PI*2);ctx.fillStyle=col+(isSel?"dd":"bb");ctx.fill();
+    ctx.strokeStyle="rgba(255,255,255,0.95)";ctx.lineWidth=isSel?2:1;ctx.stroke();
+    canvas._hoverRows.push({x:px-7,y:py-7,w:14,h:14,row:p});
+    const right=px>PAD.left+pw-70;
+    ctx.font="500 10px Inter,sans-serif";ctx.fillStyle=col;ctx.textAlign=right?"right":"left";ctx.textBaseline="middle";
+    ctx.fillText(p.name,px+(right?-10:10),py);
+  });
 }
 function drawTankActCanvas(canvasId,points,H,showLabels,isExpanded,bigDashLabel){
   drawWithBestHeadroom(hr=>drawTankActCore(canvasId,points,H,showLabels,isExpanded,bigDashLabel,hr));
@@ -5379,6 +5515,7 @@ function drawTankActCore(canvasId,points,H,showLabels,isExpanded,bigDashLabel,hr
   }
   const PAD={top:16,right:20,bottom:62,left:52};
   const pw=W-PAD.left-PAD.right, ph=H-PAD.top-PAD.bottom;
+  if(tankActMode==="pct")return drawTankActPct(canvas,ctx,points,W,H,PAD,pw,ph,hr,bigDashLabel);
   // Both axes share one scale (see comment above) so the diagonal reference
   // line is a true 45°, not a slope that depends on which axis happens to
   // have the larger range.
@@ -5468,7 +5605,8 @@ function drawTankActCore(canvasId,points,H,showLabels,isExpanded,bigDashLabel,hr
   ctx.textAlign="center";ctx.textBaseline="top";
   for(let v=0;v<=axMax;v+=step)ctx.fillText(v,PAD.left+(v/axMax)*pw,PAD.top+ph+5);
   ctx.textAlign="right";ctx.textBaseline="middle";
-  for(let v=0;v<=axMax;v+=step)ctx.fillText(v,PAD.left-5,PAD.top+(1-v/axMax)*ph);
+  if(tankActMode==="pct"){const ys=axMax>20?4:2;for(let v=0;v<=axMax+1e-9;v+=ys)ctx.fillText(Math.round(v/40*100)+"%",PAD.left-5,PAD.top+(1-v/axMax)*ph);}
+  else for(let v=0;v<=axMax;v+=step)ctx.fillText(v,PAD.left-5,PAD.top+(1-v/axMax)*ph);
 
   // True Activity % secondary tick row — same nCPM*GCD/60*100 conversion the
   // main N_eff/nCPM chart uses, so the two rows read consistently.
@@ -5485,7 +5623,7 @@ function drawTankActCore(canvasId,points,H,showLabels,isExpanded,bigDashLabel,hr
   ctx.textAlign="center";ctx.textBaseline="bottom";
   ctx.fillText("True Activity nCPM",PAD.left+pw/2,H-4);
   ctx.translate(13,PAD.top+ph/2);ctx.rotate(-Math.PI/2);
-  ctx.textBaseline="top";ctx.fillText("Tank Sitting nCPM",0,0);
+  ctx.textBaseline="top";ctx.fillText(tankActMode==="pct"?"Tank Sitting · % of 40 nCPM":"Tank Sitting nCPM",0,0);
   ctx.restore();
 
   points.forEach(p=>{
@@ -5494,7 +5632,7 @@ function drawTankActCore(canvasId,points,H,showLabels,isExpanded,bigDashLabel,hr
     const col=isSel?"#e8c04d":(CLASS_COLORS[p.cls]||DISPEL_CASTER_COLORS[p.cls]||"#fff");
     ctx.beginPath();ctx.arc(px,py,isSel?8:6,0,Math.PI*2);
     ctx.fillStyle=col+(isSel?"dd":"bb");ctx.fill();
-    ctx.strokeStyle=col;ctx.lineWidth=isSel?2.5:1.5;ctx.stroke();
+    ctx.strokeStyle="rgba(255,255,255,0.95)";ctx.lineWidth=isSel?2:1;ctx.stroke();
     canvas._hoverRows.push({x:px-7,y:py-7,w:14,h:14,row:p});
   });
 
@@ -5906,10 +6044,11 @@ function tankTipHtml(row){
   const entries=Object.entries(row.perTankNCPM||{}).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]);
   if(!entries.length)return`<div class="ht-title">${htName(row.name,row.cls)}</div><div class="ht-row">No casts on these tanks</div>`;
   return `<div class="ht-title">${htName(row.name,row.cls)} — tanks healed</div>`+
-    entries.map(([t,v])=>`<div class="ht-row"><span>${htName(t,allClsByName()[t])}</span><strong>${round1(v)} nCPM</strong></div>`).join("");
+    entries.map(([t,v])=>`<div class="ht-row"><span>${htName(t,allClsByName()[t])}</span><strong>${round1(v)} nCPM</strong></div>`).join("")+
+    (row._trueNCPM?`<div class="ht-note">${round1(row.nCPM||0)} nCPM on tanks of ${round1(row._trueNCPM)} overall = <b>${Math.round(Math.min(100,row.nCPM/row._trueNCPM*100))}%</b> of all their heals</div>`:"");
 }
 
-let tankViewMode="ncpm"; // "ncpm" or "pct" — tank-sitting nCPM, or that as a % of the healer's overall True Activity nCPM
+let tankViewMode="pct"; // "pct" (tank nCPM as % of the 40-nCPM maximum, the default) or "ncpm" 
 function drawTankCanvas(canvasId,rows,statsMap){
   statsMap=statsMap||{};
   const g=makeBarCanvas(canvasId,Math.max(rows.length,1));
@@ -5928,8 +6067,10 @@ function drawTankCanvas(canvasId,rows,statsMap){
   // Tank Sitting % = this healer's tank-directed nCPM ÷ their overall True
   // Activity nCPM (from the Attention Spread stats for the same scope) — how
   // much of everything they cast went to tanks, not just the raw pace.
+  // % = tank nCPM ÷ the healer's overall nCPM: the share of all their heals
+  // (cast-time weighted) that went to tanks.
   const withVal=rows.map(r=>{
-    const trueNCPM=(statsMap[r.name]&&statsMap[r.name].nCPM)||0;
+    const trueNCPM=(statsMap&&statsMap[r.name]&&statsMap[r.name].nCPM)||0;
     const pct=trueNCPM>0?Math.min(100,(r.nCPM/trueNCPM)*100):0;
     return{...r,_trueNCPM:trueNCPM,_pct:pct};
   });
@@ -6216,6 +6357,7 @@ async function fetchAndDrawTankSitting(code,allFights,bossFights,trashFights,hea
     " — nCPM of casts landed directly on these targets (tanks from the raid's Group Composition, Paladins excluded)";
   document.getElementById("tanks-list").innerHTML=tanks.length?
     "Tanks: "+tanks.map((t,i)=>`<span>${labels[i]}: <strong style="color:${TANK_CLASS_COLORS[t.type]||'var(--text)'}">${t.name}</strong></span>`).join(""):"";
+  try{applyRaidHeadToggles();}catch(e){}
 
   if(!tanks.length){
     document.getElementById("section-tanksitting").style.display="none";
@@ -7510,6 +7652,7 @@ function redrawTrinketPanels(){
   drawTrinketCanvas("chart-trinkets-all",  ta.all,   clsByName);
   drawTrinketCanvas("chart-trinkets-boss", trinkBoss,clsByName);
   drawTrinketCanvas("chart-trinkets-trash",ta.trash, clsByName);
+  if(typeof piDetailMode!=="undefined"&&piDetailMode==="detailed")requestAnimationFrame(()=>drawPiTimeline());
 }
 // Fight list a given trinket canvas/scope should pull "which fight + when"
 // data from. "Bosses Only" respects whichever single fight is currently
@@ -7715,6 +7858,608 @@ async function fetchAndDrawTrinkets(code,allFights,bossFights,trashFights,friend
     drawTrinketCanvas("chart-trinkets-trash",trashT, clsByName);
     document.getElementById("section-trinkets").style.display="block";
   }));
+  try{await computePiTimeline(code,bossFights,idToName);}catch(e){console.warn("[PI timeline]",e);}
+}
+
+// ═══ Power Infusion — detailed timeline ═════════════════════════════════════
+// Who Power Infused whom in every boss fight, and when. Built from the same
+// per-fight buff requests the trinket counter already made (cache hits, no
+// extra API calls). One PI = the first applybuff from a priest on a target;
+// re-applications of the same priest → target within 60s are the same PI.
+let piDetailMode="overview";
+const PI_PRIEST_COLORS=["#ffd23f","#7fdcff","#ff7c9c","#9be15d","#c084fc","#ff9f1c","#4bd0c0","#e8e3cf","#f87171","#60a5fa"];
+async function computePiTimeline(code,bossFights,idToName){
+  const out={};
+  const pages=await Promise.all((bossFights||[]).map(f=>v1PagedEvents(code,{start:f.start_time,end:f.end_time,hostility:0,filter:buffEventFilter()})));
+  (bossFights||[]).forEach((f,i)=>{
+    const list=[];const last={};
+    for(const pg of pages[i]||[])for(const ev of pg.events||[]){
+      if(ev.type!=="applybuff")continue;
+      const def=trinketBuffDef(ev);if(!def||def.name!==PI_TRINKET_NAME)continue;
+      const src=idToName[ev.sourceID]||"?",tgt=idToName[ev.targetID]||"?";
+      const k=src+"|"+tgt;if(last[k]!=null&&ev.timestamp-last[k]<60000)continue;last[k]=ev.timestamp;
+      list.push({src,tgt,at:Math.max(0,ev.timestamp-f.start_time)});
+    }
+    out[f.id]=list.sort((a,b)=>a.at-b.at);
+  });
+  if(cachedReport){cachedReport.piByFight=out;}
+  // Pyroblasts: one request over the whole boss span, split per fight
+  try{
+    const bf=(bossFights||[]).filter(f=>f.end_time>f.start_time);
+    if(bf.length){
+      // begincast → cast gives the real cast bar (PI's haste shortens it)
+      const pg=await v1PagedEvents(code,{start:Math.min(...bf.map(f=>f.start_time))-10000,end:Math.max(...bf.map(f=>f.end_time)),hostility:0,filter:'type in ("begincast","cast") and ability.name="Pyroblast"'});
+      const py={},pend={};
+      const evs=(pg||[]).flatMap(p=>p.events||[]).sort((a,b)=>a.timestamp-b.timestamp);
+      for(const ev of evs){
+        const n=idToName[ev.sourceID];if(!n)continue;
+        if(ev.type==="begincast"){pend[n]=ev.timestamp;continue;}
+        if(ev.type!=="cast")continue;
+        const f=bf.find(x=>ev.timestamp>=x.start_time&&ev.timestamp<=x.end_time);if(!f){delete pend[n];continue;}
+        const st=pend[n]!=null&&ev.timestamp-pend[n]<=8000?pend[n]:null;delete pend[n];
+        ((py[f.id]=py[f.id]||{})[n]=py[f.id][n]||[]).push({s:(st!=null?st:ev.timestamp-6000)-f.start_time,e:ev.timestamp-f.start_time,est:st==null});
+      }
+      if(cachedReport)cachedReport.piPyro=py;
+    }
+  }catch(e){console.warn("[PI pyro]",e);}
+  // Loatheb: Fungal Bloom (the spore buff) windows per player + spore pops,
+  // so PI timing can be read against who had the spore crit buff.
+  try{
+    const lf=(bossFights||[]).filter(f=>/Loatheb/i.test(f.name||""));
+    const sp={};
+    await Promise.all(lf.map(async f=>{
+      // The buff comes from the Spore (an enemy) — so ask both sides, by id
+      // and name, and also take the Spores' own "Fungal Bloom" casts as the
+      // pop times in case the buff itself isn't logged.
+      const flt='(ability.id=29232 or ability.name="Fungal Bloom") and type in ("applybuff","removebuff","refreshbuff","cast")';
+      const [pa,pb]=await Promise.all([
+        v1PagedEvents(code,{start:f.start_time,end:f.end_time,hostility:0,filter:flt}),
+        v1PagedEvents(code,{start:f.start_time,end:f.end_time,hostility:1,filter:flt}),
+      ]);
+      const pg=[...(pa||[]),...(pb||[])];
+      const win={},open={},raw=[],castPops=[];const seenEv=new Set();
+      const evAll=pg.flatMap(p=>p.events||[]).sort((a,b)=>a.timestamp-b.timestamp);
+      for(const ev of evAll){
+        const sig=ev.type+"|"+ev.timestamp+"|"+ev.sourceID+"|"+ev.targetID;if(seenEv.has(sig))continue;seenEv.add(sig);
+        if(ev.type==="cast"){const at=Math.max(0,ev.timestamp-f.start_time);if(!castPops.some(t=>Math.abs(t-at)<1500))castPops.push(at);continue;}
+        const n=idToName[ev.targetID];if(!n)continue;const at=Math.max(0,ev.timestamp-f.start_time);
+        if(ev.type==="applybuff"||ev.type==="refreshbuff"){if(open[n]==null){open[n]=at;raw.push({at,n});}}
+        else if(ev.type==="removebuff"&&open[n]!=null){(win[n]=win[n]||[]).push([open[n],at]);delete open[n];}
+      }
+      const end=f.end_time-f.start_time;Object.entries(open).forEach(([n,a])=>{(win[n]=win[n]||[]).push([a,end]);});
+      const pops=[];raw.sort((a,b)=>a.at-b.at).forEach(x=>{const l=pops[pops.length-1];if(l&&x.at-l.at<=1500)l.names.push(x.n);else pops.push({at:x.at,names:[x.n]});});
+      // spores that popped without any logged buff on a player
+      castPops.forEach(t=>{if(!pops.some(p=>Math.abs(p.at-t)<2500))pops.push({at:t,names:[]});});
+      pops.sort((a,b)=>a.at-b.at);
+      sp[f.id]={win,pops,buffLogged:raw.length>0};
+    }));
+    if(cachedReport)cachedReport.piSpores=sp;
+  }catch(e){console.warn("[PI spores]",e);}
+  if(piDetailMode==="detailed")drawPiTimeline();
+  return out;
+}
+function setPiDetailMode(m){
+  piDetailMode=m==="detailed"?"detailed":"overview";
+  const on=piDetailMode==="detailed";
+  ["","-2"].forEach(sf=>{const bo=document.getElementById("pi-mode-overview"+sf),bd=document.getElementById("pi-mode-detailed"+sf);
+    if(bo&&bd){bo.style.background=on?"transparent":"var(--gold)";bo.style.color=on?"var(--muted)":"#0d0e13";bd.style.background=on?"var(--gold)":"transparent";bd.style.color=on?"#0d0e13":"var(--muted)";}});
+  const sec=document.getElementById("section-trinkets");if(!sec)return;
+  const mainPanels=sec.querySelector(":scope>.panels"),leg=document.getElementById("trinket-legend"),det=document.getElementById("pi-detail");
+  if(mainPanels)mainPanels.style.display=on?"none":"";
+  if(leg)leg.style.display=on?"none":"";
+  if(det)det.style.display=on?"":"none";
+  if(on){
+    const r=cachedReport;
+    if(r&&!r.piByFight&&r.trinketsCode)computePiTimeline(r.trinketsCode,r.trinketsBossFights||r.bossFights||[],r.trinketsIdToName||{}).catch(e=>console.warn(e));
+    requestAnimationFrame(()=>drawPiTimeline());
+  }else requestAnimationFrame(()=>{try{redrawTrinketPanels();}catch(e){}});
+  if(typeof updatePanelMetrics==="function")updatePanelMetrics();
+}
+function piTimelineTip(row){
+  if(!row)return"";
+  const cls=(cachedReport&&cachedReport.trinketsClsByName)||{};
+  if(row.spore){const sp=row.spore;
+    let h=`<div class="ht-title">Spore at ${fmtMS(sp.at)} — ${row.fight}</div>`;
+    if(row.rel!=null)h+=`<div class="ht-row"><span>vs this PI</span><strong>${row.rel>=0?"+":""}${(row.rel/1000).toFixed(1)}s</strong></div>`;
+    if(!sp.names.length)return h+`<div class="ht-note">The spore popped, but the log doesn't show who got Fungal Bloom.</div>`;
+    if(row.tgt)h+=`<div class="ht-row"><span>${htName(row.tgt,cls[row.tgt]||"")} got it</span><strong style="color:${sp.names.includes(row.tgt)?"#52d273":"#ff8a8a"}">${sp.names.includes(row.tgt)?"yes":"no"}</strong></div>`;
+    return h+`<div class="ht-row"><span>Fungal Bloom on</span><strong>${sp.names.length} players</strong></div><div class="ht-note">${sp.names.slice().sort().map(n=>htName(n,cls[n]||"")).join(", ")}</div>`;}
+  if(row.pyroItem&&row.piAt==null){const q=row.pyroItem;
+    return`<div class="ht-title">${htName(row.tgt,cls[row.tgt]||"Mage")} — Pyroblast</div><div class="ht-row"><span>${row.fight}</span><strong>${fmtMS(Math.max(0,q.s))} → ${fmtMS(q.e)}</strong></div><div class="ht-row"><span>Cast time</span><strong>${((q.e-q.s)/1000).toFixed(1)}s${q.est?" (est.)":""}</strong></div><div class="ht-note">No Power Infusion on this mage in this window.</div>`;}
+  if(row.pyroOnly){return`<div class="ht-title">${htName(row.tgt,cls[row.tgt]||"Mage")} — no PI · ${row.fight}</div>`+row.pyroOnly.map(q=>`<div class="ht-row"><span>Pyroblast</span><strong>${fmtMS(q.e)}</strong></div>`).join("");}
+  if(row.pyroItem){const q=row.pyroItem,rel=(q.e-row.piAt)/1000,inPi=q.e>=row.piAt&&q.e<=row.piAt+15000;
+    return`<div class="ht-title">${htName(row.tgt,cls[row.tgt]||"Mage")} — Pyroblast</div>`+
+      `<div class="ht-row"><span>${row.fight}</span><strong>${fmtMS(Math.max(0,q.s))} → ${fmtMS(q.e)}</strong></div>`+
+      `<div class="ht-row"><span>Cast time</span><strong>${((q.e-q.s)/1000).toFixed(1)}s${q.est?" (est.)":""}</strong></div>`+
+      `<div class="ht-row"><span>Landed vs PI</span><strong style="color:${inPi?"#52d273":"#ff8a8a"}">${rel>=0?"+":""}${rel.toFixed(1)}s ${inPi?"· inside PI":"· outside PI"}</strong></div>`;}
+  if(row.piRow){const p=row.piRow;
+    let h=`<div class="ht-title">${htName(p.src,cls[p.src]||"Priest")} → ${htName(p.tgt,cls[p.tgt]||"")}</div><div class="ht-row"><span>${row.fight}</span><strong>PI at ${fmtMS(p.at)}</strong></div>`;
+    const inn=row.pyros.filter(q=>q.e>=p.at&&q.e<=p.at+15000);
+    h+=`<div class="ht-row"><span style="color:#ff7c0a">Pyroblasts landed in the PI</span><strong>${inn.length}</strong></div>`;
+    h+=row.pyros.map(q=>{const rel=(q.e-p.at)/1000;return`<div class="ht-row" style="padding-left:10px"><span>Pyroblast ${fmtMS(q.e)}</span><strong>${rel>=0?"+":""}${rel.toFixed(1)}s</strong></div>`;}).join("");
+    if(row.bloom!=null)h+=`<div class="ht-row"><span>Fungal Bloom (spore) at PI</span><strong style="color:${row.bloom?"#52d273":"#ff8a8a"}">${row.bloom?"yes":"no"}</strong></div>`;
+    return h;}
+  if(row.pyro!=null&&!row.list){
+    const inPi=(row.pis||[]).some(a=>row.pyro>=a&&row.pyro<=a+15000);
+    return`<div class="ht-title">${htName(row.tgt,cls[row.tgt]||"Mage")} — Pyroblast</div><div class="ht-row"><span>${row.fight}</span><strong>${fmtMS(row.pyro)}</strong></div><div class="ht-row"><span>During Power Infusion</span><strong style="color:${inPi?"#52d273":"#ff8a8a"}">${inPi?"yes":"no"}</strong></div>`;}
+  if(row.pi){const p=row.pi;
+    let h=`<div class="ht-title">${htName(p.src,cls[p.src]||"Priest")} → ${htName(p.tgt,cls[p.tgt]||"")}</div><div class="ht-row"><span>${row.fight}</span><strong>${fmtMS(p.at)} into the fight</strong></div>`;
+    const py=((((cachedReport&&cachedReport.piPyro)||{})[row.fid])||{})[p.tgt]||null;
+    if(py)h+=`<div class="ht-row"><span style="color:#ff7c0a">Pyroblasts in this PI (15s)</span><strong>${py.filter(a=>a>=p.at&&a<=p.at+15000).length}</strong></div>`;
+    if(row.bloom!=null)h+=`<div class="ht-row"><span>Fungal Bloom (spore) at PI</span><strong style="color:${row.bloom?"#52d273":"#ff8a8a"}">${row.bloom?"yes":"no"}</strong></div>`;
+    return h;}
+  const sporeLine=w=>w&&w.length?`<div class="ht-note"><span style="color:#52d273">Fungal Bloom</span>: ${w.map(([a,b])=>fmtMS(a)+"–"+fmtMS(b)).join(", ")}</div>`:"";
+  if(row.spw&&row.list&&row.list.length&&row.tgt){
+    let h=`<div class="ht-title">${row.fight} — ${htName(row.list[0].src,cls[row.list[0].src]||"Priest")} → ${htName(row.tgt,cls[row.tgt]||"")}</div>`;
+    h+=row.list.map(p=>`<div class="ht-row"><span>PI</span><strong>${fmtMS(p.at)}</strong></div>`).join("");
+    if(row.pyro&&row.pyro.length)h+=`<div class="ht-row"><span style="color:#ff7c0a">Pyroblast ×${row.pyro.length}</span><strong style="white-space:normal;max-width:260px;text-align:right;">${row.pyro.map(fmtMS).join(", ")}</strong></div>`;
+    return h+sporeLine(row.spw);
+  }
+  let h=`<div class="ht-title">${row.fight} — Power Infusions</div>`;
+  if(row.spo&&row.spo.pops.length)h+=`<div class="ht-row"><span style="color:#52d273">Spores</span><strong>${row.spo.pops.map(p=>fmtMS(p.at)).join(", ")}</strong></div>`;
+  if(!row.list.length)return h+`<div class="ht-row">No Power Infusion this pull</div>`;
+  h+=`<div class="ht-row3" style="color:#585d6e;font-size:9px;"><span>Priest → target</span><span></span><strong>Time</strong></div>`;
+  return h+row.list.map(p=>`<div class="ht-row3"><span>${htName(p.src,cls[p.src]||"Priest")} → ${htName(p.tgt,cls[p.tgt]||"")}</span><span></span><strong>${fmtMS(p.at)}</strong></div>`).join("");
+}
+// ═══ Razuvious mind control timeline ════════════════════════════════════════
+// Per Razuvious pull: the priests' Obedience Crystal mind controls on the
+// Death Knight Understudies (apply → remove of the control aura on the
+// understudy), the raid mark on that understudy, and the Shield Wall / Taunt
+// it cast while controlled. Two requests per pull: friendly-sourced events on
+// the understudies + the understudies' own casts (they can show up as either
+// side while charmed).
+const RAZ_UNIT="Death Knight Understudy";
+// Mind-control fights: which add gets controlled and which of its abilities matter.
+const MC_FIGHTS=[
+  {re:/Razuvious/i,boss:"Raz",unit:"Death Knight Understudy",units:["Death Knight Understudy","Deathknight Understudy"],short:"Understudy",abil:[{re:/shield wall|bone barrier/i,name:"Shield Wall",tag:"SW",color:"#69ccf0",shape:"square"},{re:/^taunt$/i,name:"Taunt",tag:"T",color:"#ff5c5c",shape:"tri"}]},
+  {re:/Faerlina/i,boss:"Faerlina",unit:"Naxxramas Worshipper",short:"Worshipper",abil:[{re:/widow'?s embrace/i,name:"Widow's Embrace",tag:"WE",color:"#c084fc",shape:"diamond"}]},
+];
+function mcCfg(f){return MC_FIGHTS.find(c=>c.re.test((f&&f.name)||""))||null;}
+const MC_ABIL={};MC_FIGHTS.forEach(c=>c.abil.forEach(a=>{MC_ABIL[a.name]=a;}));
+const RAID_MARKS={1:["Star","#ffd23f"],2:["Circle","#ff9f1c"],3:["Diamond","#c084fc"],4:["Triangle","#52d273"],5:["Moon","#c8d4e8"],6:["Square","#4f8dff"],7:["Cross","#ff5c5c"],8:["Skull","#f5f5f5"]};
+const RAZ_SW=/shield wall|bone barrier/i,RAZ_TAUNT=/^taunt$/i;
+const razHidden={fight:new Set(),priest:new Set(),mark:new Set()};
+function razToggle(kind,key){if(key==="__all")razHidden[kind].clear();else{const h=razHidden[kind];h.has(key)?h.delete(key):h.add(key);}drawRazMc();}
+// Reads the mind-control aura itself, from every angle it can show up in a
+// log: on the add (applied by the priest — or by the crystal), on the priest
+// (the channel), and the priest's Mind Control casts. Controller and add are
+// then matched up by time, so it works whether WCL credits the priest or the
+// Obedience Crystal.
+const MC_AURA_RE=/mind control|obedience|domination/i;
+function parseRazFight(f,friendlyPages,enemyPages,idToName,cfg){
+  cfg=cfg||mcCfg(f)||MC_FIGHTS[0];
+  const unitKey=(id,inst)=>id+"."+(inst||1);
+  const isPlayer=id=>id!=null&&idToName[id]!=null;
+  const marks={},openU={},openP={},uSess=[],pSess=[],castLog=[],casts=[];
+  const seen=new Set();
+  const all=[...(friendlyPages||[]),...(enemyPages||[])].flatMap(p=>p.events||[]).sort((a,b)=>a.timestamp-b.timestamp);
+  for(const ev of all){
+    const sig=[ev.type,ev.timestamp,ev.sourceID,ev.sourceInstance,ev.targetID,ev.targetInstance,ev.ability&&ev.ability.guid].join("|");
+    if(seen.has(sig))continue;seen.add(sig);
+    const an=(ev.ability&&ev.ability.name)||"";
+    if(ev.targetMarker&&ev.targetID!=null&&!isPlayer(ev.targetID))marks[unitKey(ev.targetID,ev.targetInstance)]=ev.targetMarker;
+    if(ev.sourceMarker&&ev.sourceID!=null&&!isPlayer(ev.sourceID))marks[unitKey(ev.sourceID,ev.sourceInstance)]=ev.sourceMarker;
+    if(MC_AURA_RE.test(an)){
+      const app=/^apply(de)?buff$/.test(ev.type),rem=/^remove(de)?buff$/.test(ev.type);
+      if((ev.type==="cast"||ev.type==="begincast")&&isPlayer(ev.sourceID)){castLog.push({p:idToName[ev.sourceID],ts:ev.timestamp,type:ev.type});continue;}
+      if(!app&&!rem)continue;
+      if(isPlayer(ev.targetID)){ // channel / charm aura on the priest
+        const n=idToName[ev.targetID];
+        if(app){if(!openP[n])openP[n]={priest:n,start:ev.timestamp};}
+        else if(openP[n]){openP[n].end=ev.timestamp;pSess.push(openP[n]);delete openP[n];}
+      }else if(ev.targetID!=null&&ev.targetID>=0){ // the aura on the add
+        const k=unitKey(ev.targetID,ev.targetInstance);
+        if(app){if(!openU[k])openU[k]={unit:k,instance:ev.targetInstance||1,start:ev.timestamp,priest:isPlayer(ev.sourceID)?idToName[ev.sourceID]:null};}
+        else if(openU[k]){openU[k].end=ev.timestamp;uSess.push(openU[k]);delete openU[k];}
+        else{
+          // removed but never seen applied: the control started before the
+          // log window (the pull-starting MC). Start it where that priest's
+          // last Mind Control cast would have landed (begincast + 3s).
+          const pr=isPlayer(ev.sourceID)?idToName[ev.sourceID]:null;
+          const bc=castLog.filter(c=>(!pr||c.p===pr)&&c.ts<ev.timestamp).pop();
+          const st=bc?(bc.type==="begincast"?bc.ts+3000:bc.ts):f.start_time;
+          uSess.push({unit:k,instance:ev.targetInstance||1,start:Math.min(st,ev.timestamp),end:ev.timestamp,priest:pr||(bc&&bc.p)||null,early:true});
+        }
+      }
+      continue;
+    }
+    const ab=ev.type==="cast"&&!isPlayer(ev.sourceID)?cfg.abil.find(a=>a.re.test(an)):null;
+    if(ab)casts.push({unit:unitKey(ev.sourceID,ev.sourceInstance),name:ab.name,ts:ev.timestamp});
+  }
+  Object.values(openU).forEach(o=>{o.end=f.end_time;o.open=true;uSess.push(o);});
+  Object.values(openP).forEach(o=>{o.end=f.end_time;o.open=true;pSess.push(o);});
+  const near=(ts,list,key)=>{let best=null,bd=3001;list.forEach(x=>{const d=Math.abs(x[key]-ts);if(d<bd){bd=d;best=x;}});return best;};
+  let sessions=[];
+  if(uSess.length){
+    // controller: the priest who applied it, else the priest whose channel /
+    // Mind Control cast started at the same moment
+    uSess.forEach(u=>{if(!u.priest){const c=near(u.start,pSess,"start")||near(u.start,castLog,"ts");if(c)u.priest=c.priest||c.p;}});
+    sessions=uSess.filter(u=>u.priest);
+  }else if(pSess.length){
+    // only the priest's side is logged: the add is the one that used its
+    // abilities during that control
+    const taken=new Set();
+    sessions=pSess.map(p=>{
+      const cnt={};casts.forEach(c=>{if(c.ts>=p.start-500&&c.ts<=p.end+500&&!taken.has(c.unit))cnt[c.unit]=(cnt[c.unit]||0)+1;});
+      const u=Object.entries(cnt).sort((a,b)=>b[1]-a[1])[0];
+      const unit=u?u[0]:"?."+p.start;if(u)taken.add(unit);
+      return{priest:p.priest,unit,instance:u?Number(unit.split(".")[1]):"?",start:p.start,end:p.end,open:p.open};
+    });
+  }
+  sessions.sort((a,b)=>a.start-b.start);
+  return sessions.map(s=>({priest:s.priest,mark:marks[s.unit]||0,unit:s.unit,instance:s.instance,short:cfg.short,
+    at:Math.max(0,s.start-f.start_time),dur:Math.max(0,s.end-Math.max(s.start,f.start_time)),open:!!s.open,early:!!s.early||s.start<f.start_time,
+    casts:casts.filter(c=>c.unit===s.unit&&c.ts>=s.start-500&&c.ts<=s.end+500).map(c=>({name:c.name,at:Math.max(0,c.ts-f.start_time)}))}));
+}
+async function fetchRazMc(code,bossFights,friendlies,allFights){
+  const fights=(bossFights||[]).filter(f=>mcCfg(f));if(!fights.length)return;
+  const idToName=Object.fromEntries((friendlies||[]).filter(h=>TALENT_TREES[h.type]).map(h=>[h.id,h.name]));
+  const out={};
+  await Promise.all(fights.map(async f=>{
+    const cfg=mcCfg(f),U=cfg.unit;
+    // the mind-control aura by name (on adds and on priests, either side) +
+    // the adds' own casts
+    // the log names the add "Deathknight Understudy" — match both spellings
+    const UN=(cfg.units||[U]).map(n=>`"${n}"`).join(",");
+    const flt=`(ability.name in ("Mind Control","Obedience Crystal","Obedience","Domination") and type in ("applydebuff","removedebuff","applybuff","removebuff","cast","begincast")) or (source.name in (${UN}) and type="cast")`;
+    const [fp,ep]=await Promise.all([
+      v1PagedEvents(code,{start:f.start_time-5000,end:f.end_time,hostility:0,filter:flt}),
+      v1PagedEvents(code,{start:f.start_time-5000,end:f.end_time,hostility:1,filter:flt}),
+    ]);
+    out[f.id]=parseRazFight(f,fp,ep,idToName,cfg);
+  }));
+  if(cachedReport)cachedReport.razMc=out;
+  console.info("[mind control]",out);
+  drawRazMc();
+  // spell hit from gear, per controlling priest per pull
+  try{await computeMcHit(code,fights,friendlies,allFights,out);}catch(e){console.warn("[mind control] spell hit",e);}
+  drawRazMc();
+}
+// ── Spell hit on gear (Wowhead item tooltips, cached in this browser) ───────
+const SPELLHIT_KEY="encore_spellhit_v1";
+let spellHitCache=null;
+function spellHitStore(){if(spellHitCache)return spellHitCache;try{spellHitCache=JSON.parse(localStorage.getItem(SPELLHIT_KEY)||"{}");}catch(e){spellHitCache={};}return spellHitCache;}
+async function itemSpellHit(id){
+  const c=spellHitStore();if(c[id]!==undefined)return c[id];
+  try{
+    const res=await fetch(`https://nether.wowhead.com/classic/tooltip/item/${id}?dataEnv=4&locale=0`);
+    if(!res.ok)throw new Error("HTTP "+res.status);
+    const j=await res.json();const t=String(j.tooltip||"").replace(/<[^>]+>/g," ");
+    const m=t.match(/chance to hit with spells by (\d+)%/i);
+    c[id]={h:m?Number(m[1]):0,n:j.name||""};
+    try{localStorage.setItem(SPELLHIT_KEY,JSON.stringify(c));}catch(e){}
+    return c[id];
+  }catch(e){return null;}
+}
+async function computeMcHit(code,fights,friendlies,allFights,mc){
+  const idToName=Object.fromEntries((friendlies||[]).map(h=>[h.id,h.name]));
+  const af=(allFights||[]).filter(f=>f.start_time!=null&&f.end_time>f.start_time);
+  const rng=raidHeadRange&&raidHeadRange.code===code?raidHeadRange:{start:Math.min(...af.map(f=>f.start_time)),end:Math.max(...af.map(f=>f.end_time))};
+  const pages=await v1PagedEvents(code,{start:rng.start,end:rng.end,hostility:0,filter:'type="combatantinfo"'});
+  const evs=(pages||[]).flatMap(p=>p.events||[]).filter(e=>e.type==="combatantinfo");
+  const out={};const need=new Set();
+  fights.forEach(f=>{
+    const priests=new Set((mc[f.id]||[]).map(c=>c.priest));if(!priests.size)return;
+    const o=out[f.id]={};
+    priests.forEach(n=>{
+      // the snapshot taken at this pull (closest combatantinfo inside / just before it)
+      const cand=evs.filter(e=>idToName[e.sourceID]===n&&e.timestamp>=f.start_time-5000&&e.timestamp<=f.end_time);
+      const ev=cand.sort((a,b)=>Math.abs(a.timestamp-f.start_time)-Math.abs(b.timestamp-f.start_time))[0];
+      if(!ev){o[n]={pct:null};return;}
+      const logged=[ev.hitSpell,ev.spellHit,ev.stats&&ev.stats.hitSpell].find(v=>typeof v==="number"&&v>0);
+      const ids=(ev.gear||[]).filter(g=>g&&g.id).map(g=>g.id);ids.forEach(id=>need.add(id));
+      o[n]={ids,logged:logged||null};
+    });
+  });
+  // resolve items (6 at a time)
+  const list=[...need];let i=0;
+  await Promise.all(Array.from({length:6},async()=>{while(i<list.length){const id=list[i++];await itemSpellHit(id);}}));
+  const c=spellHitStore();
+  Object.values(out).forEach(o=>Object.values(o).forEach(x=>{
+    if(!x.ids)return;
+    const items=x.ids.map(id=>({id,...(c[id]||{h:null,n:""})}));
+    const unknown=items.filter(it=>it.h==null).length;
+    x.items=items.filter(it=>it.h>0).map(it=>({id:it.id,n:it.n,h:it.h}));
+    x.pct=x.items.reduce((a,b)=>a+b.h,0);x.unknown=unknown;delete x.ids;
+  }));
+  if(cachedReport)cachedReport.mcHit=out;
+  drawRazMc();
+}
+function mcHitOf(fid,priest){const h=cachedReport&&cachedReport.mcHit&&cachedReport.mcHit[fid];return h?h[priest]||null:undefined;}
+function mcHitTxt(h){if(h===undefined)return"";if(!h||h.pct==null)return"hit ?";if(h.logged)return`+${h.logged}% hit`;return`+${h.pct}% hit${h.unknown?"?":""}`;}
+function razMarkLabel(c){return c.mark&&RAID_MARKS[c.mark]?RAID_MARKS[c.mark][0]:`${c.short||"Understudy"} #${c.instance||"?"}`;}
+function razMarkColor(c){return c.mark&&RAID_MARKS[c.mark]?RAID_MARKS[c.mark][1]:"#9aa1ba";}
+function razTip(row){
+  if(!row)return"";
+  const cls=(cachedReport&&cachedReport.trinketsClsByName)||{};
+  if(row.hdr){let h=`<div class="ht-title">${row.title}</div>`;
+    if(!row.list.length)return h+`<div class="ht-row">No mind control recorded</div>`;
+    return h+row.list.map(c=>`<div class="ht-row"><span>${htName(c.priest,"Priest")} → <span style="color:${razMarkColor(c)}">${razMarkLabel(c)}</span></span><strong>${fmtMS(c.at)} · ${(c.dur/1000).toFixed(0)}s</strong></div>`).join("");}
+  if(row.cast){return`<div class="ht-title">${row.cast.name}</div><div class="ht-row"><span>${htName(row.c.priest,"Priest")} on <span style="color:${razMarkColor(row.c)}">${razMarkLabel(row.c)}</span></span><strong>${fmtMS(row.cast.at)}</strong></div>`;}
+  const c=row.c;
+  let h=`<div class="ht-title">${htName(c.priest,"Priest")} → <span style="color:${razMarkColor(c)}">${razMarkLabel(c)}</span></div>`;
+  h+=`<div class="ht-row"><span>Controlled</span><strong>${c.early?"before the pull":fmtMS(c.at)} → ${fmtMS(c.at+c.dur)} · ${(c.dur/1000).toFixed(1)}s${c.early?" in the pull":""}${c.open?" (until the pull ended)":""}</strong></div>`;
+  if(c.dur<1000)h+=`<div class="ht-note">Broke almost immediately (resisted or broken).</div>`;
+  const abil=(MC_FIGHTS.find(cf=>cf.short===c.short)||MC_FIGHTS[0]).abil;
+  abil.forEach(a=>{const l=c.casts.filter(x=>x.name===a.name);
+    h+=`<div class="ht-row"><span style="color:${a.color}">${a.name} ×${l.length}</span><strong style="white-space:normal;max-width:240px;text-align:right;">${l.map(x=>fmtMS(x.at)).join(", ")||"—"}</strong></div>`;});
+  const hit=row.hit;
+  if(hit!==undefined){
+    if(!hit||hit.pct==null)h+=`<div class="ht-row"><span>Spell hit on gear</span><strong>unknown (no gear snapshot)</strong></div>`;
+    else{h+=`<div class="ht-row"><span>Spell hit on gear</span><strong>+${hit.logged||hit.pct}%</strong></div>`;
+      if(hit.items&&hit.items.length)h+=hit.items.map(it=>`<div class="ht-row" style="padding-left:10px;color:var(--muted)"><span>${it.n||("item "+it.id)}</span><strong>+${it.h}%</strong></div>`).join("");
+      if(hit.unknown)h+=`<div class="ht-note">${hit.unknown} item(s) couldn't be read from Wowhead — the total may be higher.</div>`;}
+  }
+  return h+`<div class="ht-note">${row.title}</div>`;
+}
+function drawRazMc(){
+  const r=cachedReport;const sec=document.getElementById("section-raz");const canvas=document.getElementById("chart-raz");
+  if(!r||!sec||!canvas)return;
+  const data=r.razMc;
+  const fightsAll=(r.bossFights||[]).filter(f=>mcCfg(f)&&data&&data[f.id]);
+  if(!fightsAll.length){sec.style.display="none";return;}
+  sec.style.display="block";
+  attachBarHover("chart-raz",razTip);
+  const cls=r.trinketsClsByName||Object.fromEntries((r.friendlies||[]).map(h=>[h.name,h.type]));
+  const allC=fightsAll.flatMap(f=>data[f.id]);
+  const priests=[...new Set(allC.map(c=>c.priest))].sort();
+  const pc={};priests.forEach((p,i)=>{pc[p]=PI_PRIEST_COLORS[i%PI_PRIEST_COLORS.length];});
+  const markKeys=[...new Set(allC.map(c=>razMarkLabel(c)))].sort();
+  const pullIdx=f=>fightsAll.filter(x=>mcCfg(x)===mcCfg(f)).indexOf(f);
+  const pullName=(f,i)=>`${mcCfg(f).boss} ${pullIdx(f)+1}${f.kill?" · kill":f.kill===false?" · wipe":""}`;
+  // legend + filters
+  const lg=document.getElementById("raz-legend");
+  if(lg){const cnt={};allC.forEach(c=>{cnt[c.priest]=(cnt[c.priest]||0)+1;});
+    lg.innerHTML=priests.map(p=>`<div class="dispel-leg-item"><span class="dispel-leg-sq" style="background:${pc[p]}"></span><span>${p} · ${cnt[p]} MC</span></div>`).join("")+
+      [...new Set(fightsAll.map(f=>mcCfg(f)))].flatMap(cf=>cf.abil).map(a=>`<div class="dispel-leg-item"><span class="dispel-leg-sq" style="background:${a.color}"></span><span>${a.name}</span></div>`).join("");}
+  const fl=document.getElementById("raz-filters");
+  if(fl){
+    const esc=t=>String(t).replace(/'/g,"\'").replace(/"/g,"&quot;");
+    const chip=(kind,key,label,color)=>`<button type="button" class="pi-chip${razHidden[kind].has(key)?"":" on"}" style="color:${color}" onclick="razToggle('${kind}','${esc(key)}')">${label}</button>`;
+    const row=(title,kind,items)=>items.length>1||razHidden[kind].size?`<div class="pi-frow"><b>${title}</b>${items.join("")}${razHidden[kind].size?`<button type="button" class="pi-chip reset" onclick="razToggle('${kind}','__all')">All</button>`:""}</div>`:"";
+    const markColor=k=>{const e=Object.values(RAID_MARKS).find(m=>m[0]===k);return e?e[1]:"#9aa1ba";};
+    fl.innerHTML=row("Pulls","fight",fightsAll.map((f,i)=>chip("fight",String(f.id),pullName(f,i),"#dde0ea")))+
+      row("Priests","priest",priests.map(p=>chip("priest",p,p,pc[p])))+
+      row("Marks","mark",markKeys.map(k=>chip("mark",k,k,markColor(k))));
+  }
+  const fights=fightsAll.filter(f=>!razHidden.fight.has(String(f.id)));
+  const rows=[];
+  fights.forEach(f=>{
+    const i=fightsAll.indexOf(f);
+    const list=data[f.id].filter(c=>!razHidden.priest.has(c.priest)&&!razHidden.mark.has(razMarkLabel(c)));
+    const title=pullName(f,i);
+    rows.push({hdr:true,f,list,title});
+    list.forEach(c=>rows.push({f,c,title}));
+  });
+  const HDR=24,ROW=36,PADL=220,PADR=20,AX=26,BOT=40;
+  canvas.style.width="0px";
+  const W=Math.max(canvas.parentElement.getBoundingClientRect().width||600,360);
+  const H=AX+rows.reduce((a,x)=>a+(x.hdr?HDR:ROW),0)+BOT;
+  const dpr=window.devicePixelRatio||1;
+  canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);canvas.style.width="100%";canvas.style.height=H+"px";canvas.style.display="block";
+  const ctx=canvas.getContext("2d");ctx.scale(dpr,dpr);
+  canvas._hoverRows=[];
+  if(!fights.length){ctx.fillStyle="#585d6e";ctx.font="11px Inter,sans-serif";ctx.textAlign="left";ctx.textBaseline="middle";ctx.fillText("Every pull is filtered out",12,AX+12);return;}
+  const maxMs=Math.max(...fights.map(f=>f.end_time-f.start_time));
+  const pw=W-PADL-PADR,X=ms=>PADL+(Math.min(ms,maxMs)/maxMs)*pw;
+  const step=maxMs>300000?60000:maxMs>120000?30000:15000;
+  ctx.font="10px Inter,sans-serif";ctx.textBaseline="middle";
+  for(let t=0;t<=maxMs+1;t+=step){const x=X(t);ctx.strokeStyle="rgba(255,255,255,0.06)";ctx.beginPath();ctx.moveTo(x,AX-4);ctx.lineTo(x,H-BOT+4);ctx.stroke();
+    if(x<W-PADR-70){ctx.fillStyle="#7c8296";ctx.textAlign=t===0?"left":"center";ctx.fillText(fmtMS(t),x,AX/2);}}
+  ctx.textAlign="right";ctx.fillStyle="#e8c04d";ctx.font="600 10px Inter,sans-serif";ctx.fillText("max "+fmtMS(maxMs),W-PADR,AX/2);
+  let y=AX;
+  rows.forEach(rw=>{
+    const f=rw.f,dur=f.end_time-f.start_time;
+    if(rw.hdr){
+      ctx.fillStyle="rgba(255,255,255,0.045)";ctx.fillRect(0,y+2,W,HDR-4);
+      ctx.textAlign="left";ctx.textBaseline="middle";ctx.fillStyle="#e8c04d";ctx.font="700 11px Inter,sans-serif";
+      const t=rw.title;ctx.fillText(t,8,y+HDR/2);
+      const nw=ctx.measureText(t).width;ctx.fillStyle="#7c8296";ctx.font="10px 'JetBrains Mono',monospace";ctx.fillText(fmtMS(dur),16+nw,y+HDR/2);
+      if(!rw.list.length){ctx.fillStyle="#585d6e";ctx.font="italic 10px Inter,sans-serif";ctx.fillText("no mind control",PADL+6,y+HDR/2);}
+      else{ctx.fillStyle="rgba(232,192,77,0.25)";ctx.fillRect(PADL,y+HDR/2-1,X(dur)-PADL,2);}
+      canvas._hoverRows.push({x:0,y,w:W,h:HDR,full:true,row:{hdr:true,title:rw.title,list:rw.list,name:""}});
+      y+=HDR;return;
+    }
+    const c=rw.c,cy=y+13;
+    // label: priest → ● Mark
+    ctx.font="600 10.5px Inter,sans-serif";ctx.textBaseline="middle";ctx.textAlign="left";
+    const w1=ctx.measureText(c.priest).width,w2=ctx.measureText(" → ").width;
+    ctx.fillStyle=pc[c.priest];ctx.fillText(c.priest,20,cy);
+    const ht=mcHitTxt(mcHitOf(f.id,c.priest));let hw=0;
+    if(ht){ctx.font="600 9px 'JetBrains Mono',monospace";ctx.fillStyle="#9aa1ba";ctx.fillText(" "+ht,20+w1,cy);hw=ctx.measureText(" "+ht).width;ctx.font="600 10.5px Inter,sans-serif";}
+    ctx.fillStyle="#7c8296";ctx.fillText(" → ",20+w1+hw,cy);
+    const mx=20+w1+hw+w2+5;ctx.fillStyle=razMarkColor(c);ctx.beginPath();ctx.arc(mx,cy,4,0,Math.PI*2);ctx.fill();
+    ctx.fillText(razMarkLabel(c),mx+8,cy);
+    // track + control bar
+    ctx.fillStyle="rgba(255,255,255,0.06)";ctx.fillRect(PADL,cy-1,X(dur)-PADL,2);
+    const x0=X(c.at),x1=Math.max(x0+3,X(c.at+c.dur));
+    ctx.fillStyle=pc[c.priest]+"55";ctx.fillRect(x0,cy-6,x1-x0,12);
+    ctx.strokeStyle=pc[c.priest];ctx.lineWidth=1;ctx.strokeRect(x0+.5,cy-5.5,x1-x0-1,11);
+    // casts on the bar
+    let labelEnd=-1e9;
+    c.casts.forEach(k=>{
+      const x=X(k.at);const a=MC_ABIL[k.name]||{color:"#ff5c5c",shape:"tri"};ctx.fillStyle=a.color;
+      if(a.shape==="square")ctx.fillRect(x-4,cy-4,8,8);
+      else if(a.shape==="diamond"){ctx.beginPath();ctx.moveTo(x,cy-5);ctx.lineTo(x+5,cy);ctx.lineTo(x,cy+5);ctx.lineTo(x-5,cy);ctx.closePath();ctx.fill();}
+      else{ctx.beginPath();ctx.moveTo(x,cy-5);ctx.lineTo(x+5,cy+4);ctx.lineTo(x-5,cy+4);ctx.closePath();ctx.fill();}
+      canvas._hoverRows.push({x:x-6,y:cy-7,w:12,h:14,row:{cast:k,c,name:c.priest}});
+    });
+    // timestamps on a second line, under what they belong to: control start
+    // at the bar's left edge, each Shield Wall / Taunt under its glyph, the
+    // control duration at the bar's right end (skipped only if they'd collide)
+    ctx.font="9.5px 'JetBrains Mono',monospace";ctx.textBaseline="middle";
+    const ty=cy+13;let lastEnd=-1e9;
+    const put=(t,x,col,align)=>{const w=ctx.measureText(t).width;const left=align==="right"?x-w:x;if(left<lastEnd+6||left+w>W-2)return false;ctx.fillStyle=col;ctx.textAlign="left";ctx.fillText(t,left,ty);lastEnd=left+w;return true;};
+    put(c.early?"pre-pull":fmtMS(c.at),x0,c.early?"#e8c04d":"#9aa1ba");
+    c.casts.forEach(k=>{const a=MC_ABIL[k.name]||{tag:"?",color:"#ff8a8a"};put(`${a.tag} ${fmtMS(k.at)}`,X(k.at)-4,a.color);});
+    put(`${(c.dur/1000).toFixed(0)}s${c.open?"+":""}`,x1,"#e8e3cf","right");
+    canvas._hoverRows.push({x:0,y,w:W,h:ROW,full:true,row:{c,title:rw.title,name:c.priest,hit:mcHitOf(f.id,c.priest)}});
+    y+=ROW;
+  });
+}
+
+// Filters (click a chip to hide / show; "All" resets that row)
+const piHidden={boss:new Set(),priest:new Set(),target:new Set()};
+let piTimeMode="relative"; // relative (aligned at each PI) | absolute (fight time per boss)
+function setPiTimeMode(m){piTimeMode=m==="absolute"?"absolute":"relative";drawPiTimeline();}
+function piToggle(kind,key){
+  if(key==="__all")piHidden[kind].clear();
+  else{const h=piHidden[kind];h.has(key)?h.delete(key):h.add(key);}
+  drawPiTimeline();
+}
+function renderPiFilters(fights,data,pc,cls){
+  const el=document.getElementById("pi-filters");if(!el)return;
+  const all=Object.values(data||{}).flat();
+  const priests=[...new Set(all.map(p=>p.src))].sort(),targets=[...new Set(all.map(p=>p.tgt))].sort();
+  const esc=t=>String(t).replace(/'/g,"\\'").replace(/"/g,"&quot;");
+  const chip=(kind,key,label,color)=>`<button type="button" class="pi-chip${piHidden[kind].has(key)?"":" on"}" style="color:${color}" onclick="piToggle('${kind}','${esc(key)}')">${label}</button>`;
+  const row=(title,kind,items)=>items.length?`<div class="pi-frow"><b>${title}</b>${items.join("")}${piHidden[kind].size?`<button type="button" class="pi-chip reset" onclick="piToggle('${kind}','__all')">All</button>`:""}</div>`:"";
+  const tm=`<div class="pi-frow"><b>Time</b><button type="button" class="pi-chip${piTimeMode==="relative"?" on":""}" style="color:#e8c04d" onclick="setPiTimeMode('relative')">Relative to PI</button><button type="button" class="pi-chip${piTimeMode==="absolute"?" on":""}" style="color:#e8c04d" onclick="setPiTimeMode('absolute')">Fight time</button></div>`;
+  el.innerHTML=tm+
+    row("Bosses","boss",fights.map(f=>chip("boss",String(f.id),BOSS_SHORT_NAMES[f.name]||f.name,"#dde0ea")))+
+    row("Healers","priest",priests.map(p=>chip("priest",p,p,pc[p])))+
+    row("Casters","target",targets.map(t=>chip("target",t,t,CLASS_COLORS[cls[t]]||ALL_CLASS_COLORS[cls[t]]||"#c9ccd6")));
+}
+function drawPiTimeline(){
+  const canvas=document.getElementById("chart-pitimeline");const r=cachedReport;if(!canvas||!r)return;
+  attachBarHover("chart-pitimeline",piTimelineTip);
+  const fightsAll=(r.trinketsBossFights||r.bossFights||[]).filter(f=>f.end_time>f.start_time);
+  const data=r.piByFight||null;
+  const cls=r.trinketsClsByName||{};
+  const priests=[...new Set(Object.values(data||{}).flat().map(p=>p.src))].sort();
+  const pc={};priests.forEach((p,i)=>{pc[p]=PI_PRIEST_COLORS[i%PI_PRIEST_COLORS.length];});
+  renderPiFilters(fightsAll,data,pc,cls);
+  const lg=document.getElementById("pi-detail-legend");
+  if(lg){const cnt={};Object.values(data||{}).flat().forEach(p=>{cnt[p.src]=(cnt[p.src]||0)+1;});
+    lg.innerHTML=(priests.length?priests.map(p=>`<div class="dispel-leg-item"><span class="dispel-leg-sq" style="background:${pc[p]}"></span><span>${p} · ${cnt[p]} PI</span></div>`).join("")
+      :`<div class="dispel-leg-item" style="color:var(--muted)">${data?"No Power Infusion in any boss fight":"Loading Power Infusions…"}</div>`)+
+      (r.piPyro&&Object.keys(r.piPyro).length?`<div class="dispel-leg-item"><span class="dispel-leg-sq" style="background:#ff7c0a;border-radius:50%"></span><span>Pyroblast</span></div>`:"")+
+      (r.piSpores&&Object.keys(r.piSpores).length?`<div class="dispel-leg-item"><span class="dispel-leg-sq" style="background:#52d273"></span><span>Fungal Bloom (Loatheb spore)</span></div>`:"");}
+  // rows: per visible boss, a header + one row per PI.
+  //  · Relative: every row is its own window (6s before → 20s after its PI),
+  //    lined up at the PI — compares PI → Pyroblast timing across the raid.
+  //  · Fight time: each boss shares one window (6s before its first PI → 20s
+  //    after its last), so every mage in that boss lines up on the same clock;
+  //    mages who cast Pyroblast there without a PI get a row too.
+  const PRE=6000,POST=20000,ABS=piTimeMode==="absolute";
+  const pyroOf=(fid,n)=>((((r.piPyro||{})[fid])||{})[n]||[]).map(q=>typeof q==="number"?{s:q-6000,e:q,est:true}:q);
+  const fights=fightsAll.filter(f=>!piHidden.boss.has(String(f.id)));
+  const rows=[];
+  fights.forEach(f=>{
+    const list=((data&&data[f.id])||[]).filter(p=>!piHidden.priest.has(p.src)&&!piHidden.target.has(p.tgt)).slice().sort((a,b)=>a.at-b.at);
+    const dur=f.end_time-f.start_time;
+    const hdr={hdr:true,f,list,n:0};rows.push(hdr);
+    if(ABS&&list.length){
+      const lo=Math.max(0,list[0].at-PRE),hi=Math.min(dur,list[list.length-1].at+POST);
+      hdr.lo=lo;hdr.hi=hi;
+      // one row per mage: all of their PIs + all of their Pyroblasts on one clock
+      const byT=new Map();list.forEach(p=>{if(!byT.has(p.tgt))byT.set(p.tgt,[]);byT.get(p.tgt).push(p);});
+      byT.forEach((pis,tgt)=>{rows.push({f,p:pis[0],pis,lo,hi,pyros:pyroOf(f.id,tgt).filter(q=>q.e>=lo&&q.s<=hi)});hdr.n++;});
+      // mages that cast Pyroblast in this window without getting a PI here
+      const had=new Set(list.map(p=>p.tgt));
+      Object.keys(((r.piPyro||{})[f.id])||{}).sort().forEach(m=>{
+        if(had.has(m)||piHidden.target.has(m))return;
+        const py=pyroOf(f.id,m).filter(q=>q.e>=lo&&q.s<=hi);if(!py.length)return;
+        rows.push({f,p:{src:null,tgt:m,at:null},lo,hi,pyros:py});hdr.n++;
+      });
+    }else list.forEach(p=>{rows.push({f,p,lo:p.at-PRE,hi:p.at+POST,pyros:pyroOf(f.id,p.tgt).filter(q=>q.e>=p.at-PRE&&q.s<=p.at+POST)});hdr.n++;});
+  });
+  const HDR=ABS?34:24,ROW=32,PADL=250,PADR=24,AX=28,BOT=40;
+  canvas.style.width="0px";
+  const W=Math.max(canvas.parentElement.getBoundingClientRect().width||600,420);
+  const H=AX+rows.reduce((a,x)=>a+(x.hdr?HDR:ROW),0)+BOT;
+  const dpr=window.devicePixelRatio||1;
+  canvas.width=Math.round(W*dpr);canvas.height=Math.round(H*dpr);canvas.style.width="100%";canvas.style.height=H+"px";canvas.style.display="block";
+  const ctx=canvas.getContext("2d");ctx.scale(dpr,dpr);
+  canvas._hoverRows=[];
+  if(!fights.length){ctx.fillStyle="#585d6e";ctx.font="11px Inter,sans-serif";ctx.textAlign="left";ctx.textBaseline="middle";ctx.fillText(fightsAll.length?"Every boss is filtered out":"No boss fights",12,AX+12);return;}
+  const pw=W-PADL-PADR;
+  const mapFor=(lo,hi)=>t=>PADL+((Math.max(lo,Math.min(hi,t))-lo)/Math.max(1,hi-lo))*pw;
+  const gridBottom=H-BOT+4;
+  ctx.textBaseline="middle";
+  if(!ABS){
+    // relative axis on top: PI at 0, its 15s window shaded on every row
+    const X=rel=>PADL+((Math.max(-PRE,Math.min(POST,rel))+PRE)/(PRE+POST))*pw;
+    for(let t=-5000;t<=POST;t+=5000){const x=X(t);ctx.strokeStyle=t===0?"rgba(232,192,77,0.45)":"rgba(255,255,255,0.06)";ctx.beginPath();ctx.moveTo(x,AX-4);ctx.lineTo(x,gridBottom);ctx.stroke();
+      ctx.fillStyle=t===0?"#e8c04d":"#7c8296";ctx.font=(t===0?"700 ":"")+"10px Inter,sans-serif";ctx.textAlign="center";ctx.fillText(t===0?"PI":t===15000?"+15s · PI ends":(t>0?"+":"")+(t/1000)+"s",x,AX/2);}
+    ctx.fillStyle="rgba(232,192,77,0.06)";ctx.fillRect(X(0),AX-4,X(15000)-X(0),gridBottom-AX+4);
+  }else{
+    ctx.fillStyle="#7c8296";ctx.font="10px Inter,sans-serif";ctx.textAlign="left";
+    ctx.fillText("Fight time — each boss shows 6s before its first PI to 20s after its last",PADL,AX/2);
+  }
+  let y=AX;
+  rows.forEach(rw=>{
+    const f=rw.f,dur=f.end_time-f.start_time,name=BOSS_SHORT_NAMES[f.name]||f.name;
+    if(rw.hdr){
+      ctx.fillStyle="rgba(255,255,255,0.045)";ctx.fillRect(0,y+2,W,HDR-4);
+      const ty=ABS?y+11:y+HDR/2;
+      ctx.textAlign="left";ctx.textBaseline="middle";ctx.fillStyle="#e8c04d";ctx.font="700 11px Inter,sans-serif";ctx.fillText(name,8,ty);
+      let tx=14+ctx.measureText(name).width;ctx.fillStyle="#7c8296";ctx.font="10px 'JetBrains Mono',monospace";ctx.fillText(fmtMS(dur),tx,ty);tx+=ctx.measureText(fmtMS(dur)).width+12;
+      ctx.font="italic 10px Inter,sans-serif";
+      if(!rw.list.length){ctx.fillStyle="#585d6e";ctx.fillText("no PI",tx,ty);}
+      const spo=(r.piSpores||{})[f.id];
+      if(spo&&spo.pops.length){ctx.fillStyle="#52d273";ctx.font="600 9.5px Inter,sans-serif";ctx.fillText(`${spo.pops.length} spores: ${spo.pops.map(p=>fmtMS(p.at)).join(", ")}`,ABS?8:(rw.list.length?tx:tx+40),ABS?y+24:ty);}
+      if(ABS&&rw.lo!=null){
+        // this boss's own clock: ticks in the header, grid down through its rows
+        const M=mapFor(rw.lo,rw.hi),span=rw.hi-rw.lo,step=span>120000?30000:span>60000?15000:span>25000?5000:2000;
+        const yEnd=y+HDR+rw.n*ROW;
+        for(let t=Math.ceil(rw.lo/step)*step;t<=rw.hi;t+=step){const x=M(t);
+          ctx.strokeStyle="rgba(255,255,255,0.06)";ctx.beginPath();ctx.moveTo(x,y+HDR-4);ctx.lineTo(x,yEnd);ctx.stroke();
+          ctx.fillStyle="#9aa1ba";ctx.font="9.5px 'JetBrains Mono',monospace";ctx.textAlign="center";ctx.fillText(fmtMS(t),x,y+24);}
+      }
+      canvas._hoverRows.push({x:0,y,w:W,h:HDR,full:true,row:{fight:name,list:rw.list,name:"",spo}});
+      y+=HDR;return;
+    }
+    const p=rw.p,cy=y+ROW/2,noPI=p.src==null,col=noPI?"#7c8296":(pc[p.src]||"#ffd23f");
+    const M=mapFor(rw.lo,rw.hi),inWin=t=>t>=rw.lo&&t<=rw.hi;
+    // label: priest → mage ........ PI time
+    ctx.font="600 10.5px Inter,sans-serif";ctx.textBaseline="middle";ctx.textAlign="left";
+    if(noPI){ctx.fillStyle="#585d6e";ctx.font="italic 10.5px Inter,sans-serif";ctx.fillText("no PI → ",20,cy);const w0=ctx.measureText("no PI → ").width;ctx.font="600 10.5px Inter,sans-serif";
+      ctx.fillStyle=CLASS_COLORS[cls[p.tgt]]||ALL_CLASS_COLORS[cls[p.tgt]]||"#c9ccd6";ctx.fillText(p.tgt,20+w0,cy);}
+    else{
+      const srcs=[...new Set((rw.pis||[p]).map(x=>x.src))];let xx=20;
+      srcs.forEach((sn,i)=>{ctx.fillStyle=pc[sn]||col;ctx.fillText(sn+(i<srcs.length-1?",":""),xx,cy);xx+=ctx.measureText(sn+(i<srcs.length-1?", ":"")).width;});
+      ctx.fillStyle="#7c8296";ctx.fillText(" → ",xx,cy);xx+=ctx.measureText(" → ").width;
+      ctx.fillStyle=CLASS_COLORS[cls[p.tgt]]||ALL_CLASS_COLORS[cls[p.tgt]]||"#c9ccd6";ctx.fillText(p.tgt,xx,cy);
+      const times=(rw.pis||[p]).map(x=>fmtMS(x.at));
+      ctx.textAlign="right";ctx.fillStyle="#c8ccdc";ctx.font="10px 'JetBrains Mono',monospace";ctx.fillText(times.length>2?`${times[0]} +${times.length-1}`:times.join(", "),PADL-10,cy);
+    }
+    // two lanes: top = the PI itself (15s, priest's color), bottom = Pyroblasts
+    const yPI=y+9,yPY=y+21;
+    ctx.fillStyle="rgba(255,255,255,0.05)";ctx.fillRect(PADL,yPI-.5,pw,1);ctx.fillRect(PADL,yPY-.5,pw,1);
+    const pis=noPI?[]:(rw.pis||[p]);
+    pis.forEach(pp=>{const c2=pc[pp.src]||col;ctx.fillStyle=c2+"55";ctx.fillRect(M(pp.at),yPI-4,M(pp.at+15000)-M(pp.at),8);
+      if(inWin(pp.at+15000)){ctx.fillStyle=c2;ctx.fillRect(M(pp.at+15000)-1,yPI-4,2,8);}});
+    // Loatheb: spore pops as green ticks (bright dot = this mage got it)
+    const spoF=(r.piSpores||{})[f.id];
+    if(spoF&&spoF.pops)spoF.pops.forEach(pp=>{if(!inWin(pp.at))return;const x=M(pp.at),rel=noPI?null:pp.at-p.at;
+      ctx.fillStyle="rgba(82,210,115,0.55)";ctx.fillRect(x-.75,y+3,1.5,ROW-6);
+      const got=pp.names.includes(p.tgt);
+      ctx.fillStyle=got?"#52d273":"rgba(82,210,115,0.55)";ctx.beginPath();ctx.arc(x,y+4,got?3.5:2.2,0,Math.PI*2);ctx.fill();
+      canvas._hoverRows.push({x:x-5,y:y,w:10,h:ROW,row:{spore:pp,fight:name,name:"",rel,tgt:p.tgt}});});
+    const spw=(((r.piSpores||{})[f.id]||{}).win||{})[p.tgt]||[];
+    spw.forEach(([a,b])=>{if(b<rw.lo||a>rw.hi)return;ctx.fillStyle="rgba(82,210,115,0.8)";ctx.fillRect(M(a),yPI+5,Math.max(2,M(b)-M(a)),2);});
+    // Pyroblasts: cast bar (begincast → cast) + landing tick
+    let lastLbl=-1e9;
+    rw.pyros.forEach(q=>{
+      const xs=M(q.s),xe=M(q.e);
+      ctx.fillStyle="rgba(255,124,10,0.45)";ctx.fillRect(xs,yPY-3.5,Math.max(2,xe-xs),7);
+      ctx.fillStyle="#ff7c0a";ctx.fillRect(xe-1.5,yPY-5.5,3,11);
+      // offset from the PI it belongs to (latest PI up to 6s after the cast landed… within PI+20s), else fight time
+      const ref=pis.filter(pp=>q.e>=pp.at-PRE&&q.e<=pp.at+POST).sort((a,b)=>Math.abs(q.e-a.at)-Math.abs(q.e-b.at))[0];
+      const t=!ref?fmtMS(q.e):(()=>{const rel=(q.e-ref.at)/1000;return`${rel>=0?"+":""}${rel.toFixed(1)}s`;})();
+      ctx.font="600 9.5px 'JetBrains Mono',monospace";ctx.textAlign="left";
+      const tw=ctx.measureText(t).width;
+      if(xe+4>lastLbl&&xe+4+tw<W-2){ctx.fillStyle="#ffb070";ctx.fillText(t,xe+4,yPY);lastLbl=xe+4+tw+4;}
+      canvas._hoverRows.push({x:xs-2,y:yPY-6,w:Math.max(6,xe-xs+4),h:12,row:{pyroItem:q,piAt:ref?ref.at:null,tgt:p.tgt,fight:name,name:p.tgt}});
+    });
+    pis.forEach(pp=>{ctx.fillStyle=pc[pp.src]||col;ctx.beginPath();const x0=M(pp.at);ctx.moveTo(x0,yPI-6);ctx.lineTo(x0+6,yPI);ctx.lineTo(x0,yPI+6);ctx.lineTo(x0-6,yPI);ctx.closePath();ctx.fill();
+      if(rw.pis)canvas._hoverRows.push({x:x0-7,y:yPI-7,w:14,h:14,row:{pi:pp,fid:f.id,fight:name,name:pp.src}});});
+    const bloom=!noPI&&spw.length?spw.some(([a,b])=>p.at>=a&&p.at<=b):null;
+    canvas._hoverRows.push({x:0,y,w:W,h:ROW,full:true,row:noPI?{fight:name,list:[],name:p.tgt,pyroOnly:rw.pyros,tgt:p.tgt}:rw.pis&&rw.pis.length>1?{fight:name,list:rw.pis,name:p.tgt,spw,tgt:p.tgt,pyro:rw.pyros.map(q=>q.e)}:{piRow:{...p},pyros:rw.pyros,fight:name,name:p.src,bloom}});
+    y+=ROW;
+  });
+
 }
 
 async function onTrinketsBossChange(){
@@ -7858,6 +8603,8 @@ function redrawChartForExport(canvasId,forceLabels){
     return;
   }
   if(canvasId.startsWith("chart-healcd-")){renderHealCds();return;}
+  if(canvasId==="chart-pitimeline"){drawPiTimeline();return;}
+  if(canvasId==="chart-raz"){drawRazMc();return;}
   if(canvasId.startsWith("chart-crossheal-")){renderCrossheal();return;}
   if(canvasId.startsWith("chart-crossrenew-")){renderCrossRenew();return;}
   if(canvasId.startsWith("chart-consum-")){renderConsumables();return;}
@@ -7978,7 +8725,10 @@ function getBarTableForCanvas(canvasId){
     return{xLabel:"Uses",yLabel:"Mana (est.)",rows:names.map(n=>({name:n,cls:byName[n].cls,x:byName[n].total||0,y:byName[n].mana||0}))};
   }
   if(canvasId.startsWith("chart-crossrenew-"))return null; // the heat map is already a table
+  if(canvasId==="chart-pitimeline")return null;
+  if(canvasId==="chart-raz")return null;
   if(canvasId.startsWith("chart-crossheal-")){
+    if(true)return null; // the table is the chart
     return{xLabel:"Crossheal %",yLabel:"Effective healing",rows:(document.getElementById(canvasId)._xhRows||[]).map(r=>({name:r.name,cls:r.cls,x:+(r.pctCross||0).toFixed(1),y:Math.round(r.total)}))};
   }
   if(canvasId.startsWith("chart-healcd-")){
@@ -8238,6 +8988,7 @@ function getSectionHeaderInfo(panelsEl){
     }).filter(x=>x&&x.label);
     prev=prev.previousElementSibling;
   }
+  if(!prev&&panelsEl.parentElement&&panelsEl.parentElement.id==="pi-detail")prev=document.querySelector("#section-trinkets>div");
   if(prev){
     // The title's explanatory text (row-sub, or the "Dispel Magic · Cleanse
     // · ..." span next to a section name) — captured separately so it can
@@ -9248,7 +9999,7 @@ function dpsTipHtml(row){
     const colorOf=k=>kind==="wtrink"?(W_TRINKETS[k]||"#c9ccd6"):((W_CONS.find(c=>c.key===k)||{}).color||"#c9ccd6");
     h+=Object.entries(by).sort((a,b)=>b[1].length-a[1].length).map(([k,list])=>{
       const shown=list.slice(0,8).map(u=>u.at!=null?`${u.fight} ${fmtMS(u.at)}`:u.fight).join(", ");
-      return `<div style="margin:4px 0 2px;"><div style="color:${colorOf(k)};font-weight:600;white-space:nowrap;">${k} ×${list.length}</div><div style="color:var(--text);padding-left:10px;max-width:300px;line-height:1.45;">${list.slice(0,8).map(u=>`<div>${u.at!=null?`${u.fight} <span style="color:var(--muted)">${fmtMS(u.at)}</span>`:u.fight}</div>`).join("")}${list.length>8?`<div style="color:var(--muted)">+${list.length-8} more</div>`:""}</div></div>`;
+      return `<div style="margin:4px 0 2px;"><div style="color:${colorOf(k)};font-weight:600;white-space:nowrap;">${k} ×${list.length}</div><div style="color:var(--text);padding-left:10px;max-width:300px;line-height:1.45;">${list.slice(0,tipN(8)).map(u=>`<div>${u.at!=null?`${u.fight} <span style="color:var(--muted)">${fmtMS(u.at)}</span>`:u.fight}</div>`).join("")}${list.length>tipN(8)?`<div style="color:var(--muted)">+${list.length-8} more</div>`:""}</div></div>`;
     }).join("");
     if(kind==="wcons"&&dpsWconsMode==="liptaunt")h+=`<div class="ht-note">${row.count} of ${row.lips||0} LIPs were followed by a taunt within 8s.</div>`;
     return h+`<div class="ht-note">Fight — time into that fight</div>`;
@@ -9453,7 +10204,7 @@ function dpsDrawScatterCore(canvasId,rows,expanded,forceLabels,hr){
     const px=X(Math.max(xMin,r.activePct)),py=Y(r.p.dmg);
     ctx.beginPath();ctx.arc(px,py,r._sel?7:5,0,Math.PI*2);
     ctx.fillStyle=r._sel?"#e8c04d":dpsClassColor(r.cls);ctx.fill();
-    ctx.lineWidth=1.5;ctx.strokeStyle="#0d0e13";ctx.stroke();
+    ctx.lineWidth=1;ctx.strokeStyle="rgba(255,255,255,0.95)";ctx.stroke();
     canvas._hoverRows.push({x:px-8,y:py-8,w:16,h:16,row:r});
   });
   ctx.font="10px Inter,sans-serif";
@@ -9743,6 +10494,28 @@ async function copyRawData(){
   }catch(e){console.error(e);rawMsg("Copy failed: "+e.message,"#e06060");}
   finally{if(btn)btn.disabled=false;}
 }
+function updateRawFetchBtn(){
+  const b=document.getElementById("raw-fetch-btn");if(!b)return;
+  if(!rawOffline||!rawMissing.size){b.style.display="none";return;}
+  b.style.display="inline-flex";b.disabled=false;
+  b.textContent=`⬇ Fetch remaining data (${rawMissing.size}+ requests missing)`;
+}
+async function rawFetchRemaining(){
+  if(!rawOffline)return;
+  if(!getApiKey()){rawMsg("Paste your WarcraftLogs API key in the header first — the missing data has to come from WarcraftLogs.","#e0a060");const k=document.getElementById("key-input");if(k)k.focus();return;}
+  const b=document.getElementById("raw-fetch-btn");const n=rawMissing.size;
+  rawOffline=false;rawMissing.clear();
+  if(b){b.disabled=true;b.textContent=`⏳ Fetching ${n}+ missing…`;}
+  const code=rawCode;
+  try{
+    // A normal load: every pasted response is still a cache hit, so only
+    // the requests the raw data didn't have go to WarcraftLogs.
+    await loadReport(code);
+    if(typeof dpsReport!=="undefined"&&(!dpsReport||dpsReport.code!==code)){dpsReport=null;if(currentTab==="dps")await dpsLoad();}
+    rawMsg("Remaining data fetched — this log is now complete.","#52d273");
+  }catch(e){console.error(e);rawMsg("Fetching the remaining data failed: "+e.message,"#e06060");}
+  finally{if(b)b.style.display="none";}
+}
 function openRawPaste(){
   const o=document.getElementById("raw-overlay");if(!o)return;
   o.classList.add("show");const ta=document.getElementById("raw-in");if(ta){ta.value="";setTimeout(()=>ta.focus(),30);}
@@ -9760,10 +10533,12 @@ async function loadRawData(){
     document.getElementById("raw-overlay").classList.remove("show");
     const ui=document.getElementById("url-in");if(ui)ui.value=data.code;
     const ud=document.getElementById("dps-url-in");if(ud)ud.value=data.code;
-    rawMsg(`Loaded ${rawSeed.size} responses for ${data.code}${data.app?` (from v${data.app})`:""} — anything else this version needs is being fetched${getApiKey()?"":" (paste your API key if that fails)"}.`,"#52d273");
+    rawMsg(`Loaded ${rawSeed.size} responses for ${data.code}${data.app?` (from v${data.app})`:""}. Anything this version needs that isn't in them shows up as "Fetch remaining data" in the header.`,"#52d273");
     if(typeof dpsReport!=="undefined")dpsReport=null;
+    rawOffline=true;rawCode=data.code;rawMissing.clear();updateRawFetchBtn();
     switchTab("healers");
-    await loadReport(data.code);
+    try{await loadReport(data.code);}catch(e){console.warn("[raw] offline load",e);}
+    updateRawFetchBtn();
   }catch(e){console.error(e);rawMsg("Couldn't read that string: "+e.message,"#e06060");}
 }
 
@@ -9774,7 +10549,7 @@ async function loadRawData(){
 const SEC_NAV_SHORT={attention:"Attention Spread","section-effscatter":"MPS","section-spellmix":"Spell Mix","section-tankact":"Tank Sit vs Activity",
   "section-ehpct":"Effective Healing","section-casts":"Total Casts","section-mana":"Mana Spent","section-effmana":"Heal per Mana","section-mobility":"Mobility",
   "section-tanksitting":"Tank Sitting","section-bfd":"BFD Crit","section-utildmg":"Eng & Alchemy","section-dispels":"Dispels","section-trinkets":"Trinkets",
-  "section-crossheal":"Crosshealing","section-crossrenew":"Cross-Renews","section-healcd":"Cooldowns","section-consum":"Mana Consumables"};
+  "section-raz":"Mind Control","section-crossheal":"Crosshealing","section-crossrenew":"Cross-Renews","section-healcd":"Cooldowns","section-consum":"Mana Consumables"};
 const secNavSel={healers:"all",dps:"all"};
 function secNavSections(tab){
   if(tab==="dps"){
@@ -9985,6 +10760,12 @@ const GUIDE_TEXT={
 <li><b style="color:#52d273">Green</b> cells are the priest's own group (Group 2 priest also owns G1's non-tanks, Group 8 priest also G7). <b style="color:#ff5c5c">Red</b> cells are cross-renews — the darker, the more. Tanks are in their own column and never count as cross.</li>
 <li>Right column: cross-renews and their share of the priest's renews on groups (tanks excluded).</li>
 <li>G1 = tank group, G2 / G8 = the Group 2 / Group 8 priests' groups, G7 = casters. The combat log has no real group numbers, so G3–G6 are the remaining priests' groups in name order. Hover a cell for who got the renews, or a column header for the group's members.</li></ul>`],
+  "section-raz":["Mind Control",`<ul>
+<li>Faerlina and Razuvious pulls. One row per mind control: <b>priest (spell hit) → raid mark</b>, a bar from when the control started to when it ended, and its duration.</li>
+<li>Razuvious: <span style="color:#69ccf0">■</span> <b>Shield Wall</b> and <span style="color:#ff5c5c">▲</span> <b>Taunt</b> by the controlled understudy. Faerlina: <span style="color:#c084fc">◆</span> <b>Widow's Embrace</b> by the controlled worshipper. All at their time into the pull.</li>
+<li><b>Spell hit</b>: "+3% hit" next to the priest = the spell-hit bonuses on the gear they wore that pull (read from each item's Wowhead tooltip). Talents (Shadow Focus) aren't in the log, so they aren't included.</li>
+<li>The scale on top runs to the longest pull shown. Toggle pulls, priests and marks above the chart. Click a row for every timestamp.</li>
+<li>Adds without a raid mark show as "Understudy #n" / "Worshipper #n".</li></ul>`],
   "section-healcd":["Healer Cooldowns",`<ul>
 <li>How often each healer used Inner Focus, Divine Favor, Nature's Swiftness, Swiftmend, Lay on Hands, Innervate, Mana Tide Totem, Divine Intervention and Blessing of Protection.</li>
 <li><b>Hover</b> to see what each Inner Focus / Divine Favor / Nature's Swiftness was paired with — an expensive heal (Greater Heal, Prayer of Healing, Healing Touch) is a good pairing; "(unused)" means it was never spent.</li>
@@ -9998,7 +10779,11 @@ const GUIDE_TEXT={
   "section-trinkets":["Trinkets & Power Infusion",`<ul>
 <li>How often each on-use trinket, Mind Quickening Gem and Power Infusion was used — one fixed color per item.</li>
 <li>More uses = cooldowns used on cooldown instead of saved for later.</li>
-<li><b>Uses / Per min</b> toggle: per minute divides by the fight time in that panel (whole run, the boss picked, or trash) — fair across short and long scopes.</li></ul>`],
+<li><b>Uses / Per min</b> toggle: per minute divides by the fight time in that panel (whole run, the boss picked, or trash) — fair across short and long scopes.</li>
+<li><b>Time: Relative to PI</b> — each PI row shows only 6s before → 20s after that PI, lined up so the PI is always at 0 (compare timing across the raid). <b>Fight time</b> — each boss gets one shared clock from 6s before its first PI to 20s after its last, so all its mages line up; mages who cast Pyroblast there without a PI get a "no PI" row.</li>
+<li><b>Pyroblast</b>: orange bars are the target's Pyroblast casts (cast start → land), with how long after the PI each one landed (+2.4s). Hover for exact times.</li>
+<li><b>Loatheb</b>: the boss line lists the spore times; a green line under a PI row is when that caster had Fungal Bloom. Hover a PI to see if it landed during the spore buff.</li>
+<li><b>PI Detailed</b>: a timeline with one row per boss fight. Each diamond is a Power Infusion, colored by the priest who cast it, labeled with who got it and placed at the time into the pull. Hover a diamond for priest → target and time, or a row for that fight's full list.</li></ul>`],
   // ── Damage Dealers tab ──
   "dps-sec-scatter":["Warrior Activity vs Damage",`<ul>
 <li><b>X:</b> active time % (time spent attacking ÷ time present). <b>Y:</b> total damage.</li>
@@ -10210,7 +10995,8 @@ function drawHealCdCanvas(canvasId,agg){
     names=[...new Set([...priests,...Object.keys(agg.fw)])];
   }else names=(cachedReport.healers||[]).map(h=>h.name);
   const rows=names.map(n=>{
-    const cds=agg.cds[n]||{},fwm=agg.fw[n]||{};
+    const cds={...(agg.cds[n]||{})},fwm=agg.fw[n]||{};
+    if(!healCdShowSM)delete cds["Swiftmend"];
     const total=fw?Object.values(fwm).reduce((s,v)=>s+v,0):Object.values(cds).reduce((s,v)=>s+v,0);
     return{name:n,cls:cls[n],cds,fw:fwm,pairs:agg.pairs[n]||{},ifSaved:agg.ifSaved[n]||0,total,fwEff:agg.fwEff[n]||{consumed:0,targets:{}}};
   }).sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name));
@@ -10240,7 +11026,7 @@ function renderHealCds(){
   if(lg){
     if(healCdMode==="fw")lg.innerHTML=`<div class="dispel-leg-item"><span class="dispel-leg-sq" style="background:${FEAR_WARD_COLOR}"></span><span>Consumed by a fear</span></div><div class="dispel-leg-item"><span class="dispel-leg-sq" style="background:${FEAR_WARD_COLOR}55"></span><span>Cast, not consumed</span></div>`;
     else{
-      const seen=new Set();Object.values(all.cds).forEach(m=>Object.keys(m).forEach(k=>seen.add(k)));
+      const seen=new Set();Object.values(all.cds).forEach(m=>Object.keys(m).forEach(k=>seen.add(k)));if(!healCdShowSM)seen.delete("Swiftmend");
       lg.innerHTML=HEAL_CDS.filter(c=>seen.has(c.key)).map(c=>`<div class="dispel-leg-item"><span class="dispel-leg-sq" style="background:${c.color}"></span><span>${c.key}</span></div>`).join("")||`<div class="dispel-leg-item" style="color:var(--muted)">No healer cooldowns in this log</div>`;
     }
   }
@@ -10252,6 +11038,8 @@ function renderHealCds(){
   }));
 }
 function setHealCdMode(m){healCdMode=m;renderHealCds();}
+let healCdShowSM=false;
+function toggleHealCdSwiftmend(){healCdShowSM=!healCdShowSM;const b=document.getElementById("healcd-sm-btn");if(b){b.classList.toggle("active",healCdShowSM);b.textContent=healCdShowSM?"✓ Swiftmend":"+ Swiftmend";}renderHealCds();}
 async function fetchAndDrawHealCds(code,allFights,bossFights,trashFights,friendlies){
   const clsByName=Object.fromEntries((friendlies||[]).map(h=>[h.name,h.type]));
   const idToName=Object.fromEntries((friendlies||[]).map(h=>[h.id,h.name]));
@@ -10341,12 +11129,14 @@ function panelMetricFor(canvasId){
     return m==="pct"?`Mana % of ${v("selectedHealer","")||"highlighted healer"}`:m==="saved"?"Mana · net + saved/refunded":"Estimated Mana Spent";}
   if(canvasId.startsWith("chart-effmana-"))return"Effective Healing per Mana";
   if(canvasId.startsWith("chart-mobility-"))return"Mobility · instant-cast share";
-  if(canvasId.startsWith("chart-tank-"))return v("tankViewMode","ncpm")==="pct"?"Tank Sitting %":"Tank Sitting nCPM";
+  if(canvasId.startsWith("chart-tank-"))return v("tankViewMode","pct")==="pct"?"Tank Sitting · % of all heals":"Tank Sitting nCPM";
   if(canvasId.startsWith("chart-bfd-"))return v("bfdViewMode","total")==="effective"?"Biggest heal · effective":"Biggest heal · total";
   if(canvasId.startsWith("chart-utildmg-"))return v("utilDmgWho","healers")==="raid"?"Holy/Alchemy/Engineering damage · raid":"Holy/Alchemy/Engineering damage · healers";
   if(canvasId.startsWith("chart-dispels-"))return v("dispelViewMode","effective")==="effective"?"Effective dispels":"Total dispels";
+  if(canvasId==="chart-pitimeline")return"Power Infusion · priest → target, time into each boss pull";
+  if(canvasId==="chart-raz")return"Mind control · priest (spell hit) → mark, duration, abilities used";
   if(canvasId.startsWith("chart-trinkets-"))return(v("trinketViewMode","all")==="pi"?"Power Infusion only":"Trinkets & Power Infusion")+(v("trinketRateMode","uses")==="upm"?" · uses per minute":"");
-  if(canvasId.startsWith("chart-crossheal-"))return"Priest healing · own group vs crosshealing";
+  if(canvasId.startsWith("chart-crossheal-"))return"Effective healing per group · priests G2 → G8";
   if(canvasId.startsWith("chart-crossrenew-"))return(crossRenewMode==="eff"?"Renew healing":"Renews")+" per group · priests G2 → G8";
   if(canvasId.startsWith("chart-healcd-"))return v("healCdMode","cds")==="fw"?"Fear Wards · cast / consumed":"Healer cooldowns";
   if(/^chart-(all|boss|trash)$/.test(canvasId))return v("ncpmMode","ncpm")==="ncasts"?"Attention Spread · nCasts × Neff":"Attention Spread · nCPM × Neff";
@@ -10759,11 +11549,12 @@ function drawSpellMixCanvas(canvasId,healers,spellCastsMap){
       ctx.fillStyle=pt.color;ctx.fillRect(x,y,Math.max(0,w-1),BAR_H);
       const pct=Math.round(pt.share*100)+"%";
       ctx.font="600 10px Inter,sans-serif";ctx.textBaseline="middle";ctx.textAlign="center";
-      ctx.fillStyle=pt.other?"#c8ccdc":"#0d0e13";
+      // white text with a black outline
+      ctx.fillStyle="#ffffff";ctx.strokeStyle="rgba(0,0,0,0.85)";ctx.lineWidth=2.6;ctx.lineJoin="round";
       // longest label that fits: "R10 Renew 50%" → "R10 50%" → "50%"
       const tiers=pt.other?[`${pt.label} ${pct}`,pct]:[`${pt.label} ${pct}`,pt.label,pct];
       const fit=tiers.find(t=>ctx.measureText(t).width<w-6);
-      if(fit)ctx.fillText(fit,x+w/2,y+BAR_H/2);
+      if(fit){ctx.strokeText(fit,x+w/2,y+BAR_H/2);ctx.fillText(fit,x+w/2,y+BAR_H/2);}
       x+=w;
     });
     r.cls=r.cls||r.type;
@@ -11088,7 +11879,7 @@ async function fetchAndDrawCrossheal(code,allFights,friendlies){
     else{const src=who(ev.sourceID);if(src&&src!==tgt)evidence.push({ts:ev.timestamp,k:"pair",m:[src,tgt]});}
   }
   // heals per priest per fight + Prayer of Healing party sets
-  const byFight={},pohTargets={};const priests=new Set((friendlies||[]).filter(f=>f.type==="Priest").map(f=>f.name));
+  const byFight={},pohTargets={};const priests=new Set((friendlies||[]).filter(f=>f.type==="Priest"||f.type==="Paladin").map(f=>f.name));
   allFights.forEach((f,i)=>{
     const m={};byFight[f.id]=m;
     for(const pg of healPages[i]||[])for(const ev of pg.events||[]){
@@ -11123,7 +11914,7 @@ const XH_G7=-7;
 function xhRoles(x,totalsByPriest){
   const gidOf={};x.groups.forEach((g,i)=>g.forEach(n=>{gidOf[n]=i;}));
   const tanks=new Set(x.tanks||[]);
-  const healerPriests=Object.keys(totalsByPriest);
+  const healerPriests=Object.keys(totalsByPriest).filter(n=>((x.cls||{})[n]||"Priest")==="Priest");
   const priestG=new Set(healerPriests.map(n=>gidOf[n]).filter(g=>g!=null));
   let tankGid=null,best=0;x.groups.forEach((g,i)=>{const c=g.filter(n=>tanks.has(n)).length;if(c>best){best=c;tankGid=i;}});
   const g7=x.groups.map((g,i)=>i).filter(i=>!priestG.has(i)&&i!==tankGid);
@@ -11195,7 +11986,7 @@ function crosshealTipHtml(row){
   if(row.pets)notes.push(`${fmtShort(row.pets)} on pets (left out)`);
   if(row.unknown)notes.push(`${fmtShort(row.unknown)} on players with no group (left out)`);
   if(notes.length)h+=`<div class="ht-note">${notes.join(" · ")}</div>`;
-  const top=Object.entries(row.crossBy||{}).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const top=Object.entries(row.crossBy||{}).sort((a,b)=>b[1]-a[1]).slice(0,tipN(6));
   if(top.length){h+=`<div class="ht-row3" style="color:#585d6e;font-size:9px;margin-top:4px;"><span>Crosshealed most</span><span></span><strong>Eff.</strong></div>`;
     h+=top.map(([n,v])=>`<div class="ht-row3"><span>${htName(n,(x&&x.cls[n])||"")} <span style="color:var(--muted)">${roles?xhGroupLabel(x,roles,roles.gidOf[n]):""}</span></span><span></span><strong>${fmtShort(v)}</strong></div>`).join("");}
   return h;
@@ -11236,7 +12027,7 @@ function renderCrossheal(){
   const sel=document.getElementById("crossheal-boss-sel");const bv=sel?sel.value:"all";
   const roles=xhRoles(x,xhAggregate((r.allFights||[]).map(f=>f.id)));
   const lg=document.getElementById("crossheal-legend");
-  if(lg)lg.innerHTML=["own","cross"].map(k=>`<div class="dispel-leg-item"><span class="dispel-leg-sq" style="background:${XH_COLORS[k]}"></span><span>${XH_LABELS[k]}</span></div>`).join("");
+  if(lg)lg.innerHTML=["own","cross"].map(k=>`<div class="dispel-leg-item"><span class="dispel-leg-sq" style="background:${XH_COLORS[k]}"></span><span>${XH_LABELS[k]}</span></div>`).join("")+`<div class="dispel-leg-item"><span class="dispel-leg-sq" style="background:#e8c04d"></span><span>Tanks (not cross)</span></div>`;
   const gl=document.getElementById("crossheal-groups");
   if(gl){
     const open=gl.querySelector("details")&&gl.querySelector("details").open;
@@ -11250,15 +12041,15 @@ function renderCrossheal(){
       `</details>`;
   }
   setBossOnlyTitle("boss-title-crossheal","Bosses Only",r.bossFights||[],bv);
-  const all=xhRows((r.allFights||[]).map(f=>f.id),roles),boss=xhRows(healCdFightIds("boss",bv),roles),trash=xhRows(healCdFightIds("trash"),roles);
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    drawCrosshealCanvas("chart-crossheal-all",all,roles);drawCrosshealCanvas("chart-crossheal-boss",boss,roles);drawCrosshealCanvas("chart-crossheal-trash",trash,roles);
-  }));
+  // the same priest × group table as Cross-Renews, with all effective healing
+  xhDrawHeat("crossheal","heal",roles,xhGroupNumbers(x,roles),bv);
   try{renderCrossRenew(roles);}catch(e){console.warn("[crossrenew]",e);}
 }
 
 // ═══ Priest cross-renews heat map ════════════════════════════════════════════
 var crossRenewMode="n"; // n = Renew casts · eff = effective Renew healing
+var crossPctMode=false; // cells as amounts, or as % of that healer's row
+function setCrossPctMode(on){crossPctMode=!!on;document.querySelectorAll(".crosspct-toggle button").forEach(b=>b.classList.toggle("active",(b.dataset.p==="1")===crossPctMode));try{renderCrossheal();}catch(e){}}
 function setCrossRenewMode(m){
   crossRenewMode=m==="eff"?"eff":"n";
   document.querySelectorAll(".crossrenew-toggle button").forEach(b=>b.classList.toggle("active",b.dataset.cr===crossRenewMode));
@@ -11279,9 +12070,14 @@ function xhGroupNumbers(x,roles){
   let n=2;rest.forEach(gid=>{while(used.has(n)&&n<8)n++;if(used.has(n)){num[gid]=9;return;}num[gid]=n;used.add(n);});
   return num;
 }
-function crossRenewData(fightIds,roles,num){
-  const x=cachedReport.crossheal;const rb=x.renewByFight||{};const poh=x.pohTargets||{};
-  const key=crossRenewMode==="eff"?"eff":"n";
+// whole numbers, thousands as "k" (2362 → 2k, 116400 → 116k)
+function fmtK(v){v=Math.round(v||0);return v>=1000?Math.round(v/1000)+"k":String(v);}
+function crossRenewData(fightIds,roles,num,mode){
+  mode=mode||crossRenewMode;
+  const x=cachedReport.crossheal;const poh=x.pohTargets||{};
+  // "heal" = every effective heal (crosshealing table); else Renews
+  const rb=mode==="heal"?Object.fromEntries(Object.entries(x.byFight||{}).map(([fid,m])=>[fid,Object.fromEntries(Object.entries(m).map(([p,t])=>[p,Object.fromEntries(Object.entries(t).map(([n,v])=>[n,{eff:v}]))]))])):(x.renewByFight||{});
+  const key=mode==="n"?"n":"eff";
   const rows={};
   fightIds.forEach(fid=>{
     const ov=x.override[fid]||{};const g=n=>ov[n]!=null?ov[n]:roles.gidOf[n];
@@ -11307,12 +12103,14 @@ function crossRenewData(fightIds,roles,num){
   });
   const priests=Object.keys(x.cls||{}).filter(n=>x.cls[n]==="Priest"&&(rows[n]||(roles.gidOf[n]!=null&&Object.values(x.byFight||{}).some(m=>m[n]))));
   priests.forEach(n=>{if(!rows[n])rows[n]={name:n,cells:{},tgt:{},cross:0,grp:0,crossPct:0,own:ownCols(n),myN:num[roles.gidOf[n]],pohTanks:[]};});
-  return Object.values(rows).sort((a,b)=>((a.myN??99)-(b.myN??99))||a.name.localeCompare(b.name));
+  const isPal=n=>(x.cls||{})[n]==="Paladin";
+  return Object.values(rows).sort((a,b)=>(isPal(a.name)-isPal(b.name))||((a.myN??99)-(b.myN??99))||a.name.localeCompare(b.name));
 }
 function crossRenewTip(row){
   if(!row)return"";
-  const x=cachedReport.crossheal;const fmt=v=>crossRenewMode==="eff"?fmtShort(v):Math.round(v).toLocaleString();
-  const unit=crossRenewMode==="eff"?"Renew healing":"Renews";
+  const mode=row.mode||crossRenewMode;
+  const x=cachedReport.crossheal;const fmt=v=>mode==="n"?Math.round(v).toLocaleString():fmtShort(v);
+  const unit=mode==="heal"?"Effective healing":mode==="eff"?"Renew healing":"Renews";
   if(row._hdr){
     let h=`<div class="ht-title">${row.col.label}${row.col.sub?` — ${row.col.sub}`:""}</div>`;
     return h+`<div class="ht-note">${(row.col.members||[]).map(n=>htName(n,x.cls[n]||"")).join(", ")||"—"}</div>`;
@@ -11322,11 +12120,12 @@ function crossRenewTip(row){
   const v=r.cells[c.key]||0;
   const kind=c.key==="T"?"tanks — not counted as cross":r.own.has(c.key)?"own group":/^G\d$/.test(c.key)?"cross-renew":"left out";
   h+=`<div class="ht-row"><span>${unit}</span><strong>${fmt(v)} · ${kind}</strong></div>`;
-  const top=Object.entries(r.tgt[c.key]||{}).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const top=Object.entries(r.tgt[c.key]||{}).sort((a,b)=>b[1]-a[1]).slice(0,tipN(8));
   h+=top.map(([n,a])=>`<div class="ht-row"><span>${htName(n.replace(/^pet:/,""),x.cls[n]||"")}${n.startsWith("pet:")?" (pet)":""}${c.key==="T"&&r.pohTanks.includes(n)?" · in their PoH group":""}</span><strong>${fmt(a)}</strong></div>`).join("");
   return h+`<div class="ht-note">${r.name}: ${fmt(r.cross)} cross of ${fmt(r.grp)} on groups (${r.crossPct.toFixed(1)}%)</div>`;
 }
-function drawCrossRenewCanvas(canvasId,rows,cols){
+function drawCrossRenewCanvas(canvasId,rows,cols,mode){
+  mode=mode||crossRenewMode;
   const canvas=document.getElementById(canvasId);if(!canvas)return;
   attachBarHover(canvasId,crossRenewTip);
   canvas._crRows=rows;canvas._crCols=cols;
@@ -11335,42 +12134,46 @@ function drawCrossRenewCanvas(canvasId,rows,cols){
   canvas._hoverRows=[];
   const sumW=74,x0=PAD.left;
   const cw=Math.max(18,(W-PAD.left-sumW-8)/Math.max(cols.length,1));
-  const fmt=v=>crossRenewMode==="eff"?fmtShort(v):String(Math.round(v));
+  const pctMode=crossPctMode;
+  const fmt=v=>mode==="n"?String(Math.round(v)):fmtK(v);
+  const rowTot=r=>Object.values(r.cells).reduce((a,b)=>a+b,0)||1;
+  const cellTxt=(r,v)=>pctMode?Math.round(100*v/rowTot(r))+"%":fmt(v);
   // header
   ctx.textBaseline="middle";ctx.textAlign="center";
   cols.forEach((c,i)=>{const cx=x0+i*cw;
     ctx.fillStyle=c.key==="T"?"#e8c04d":"#dde0ea";ctx.font="bold 11px Inter,sans-serif";ctx.fillText(c.label,cx+cw/2,PAD.top+BAR_H/2);
-    canvas._hoverRows.push({x:cx,y:PAD.top,w:cw,h:BAR_H,row:{_hdr:true,col:c,name:""}});
+    canvas._hoverRows.push({x:cx,y:PAD.top,w:cw,h:BAR_H,row:{_hdr:true,col:c,name:"",mode}});
   });
   ctx.fillStyle="#dde0ea";ctx.font="bold 11px Inter,sans-serif";ctx.fillText("Cross",x0+cols.length*cw+8+sumW/2,PAD.top+BAR_H/2);
   if(!rows.length){ctx.fillStyle="#585d6e";ctx.font="11px Inter,sans-serif";ctx.textAlign="left";ctx.fillText("No Renews in this scope",x0+6,PAD.top+BAR_H+BAR_GAP+BAR_H/2);return;}
   let maxCross=0,maxOwn=0,maxT=0;
-  rows.forEach(r=>cols.forEach(c=>{const v=r.cells[c.key]||0;if(c.key==="T")maxT=Math.max(maxT,v);else if(r.own.has(c.key))maxOwn=Math.max(maxOwn,v);else maxCross=Math.max(maxCross,v);}));
+  rows.forEach(r=>cols.forEach(c=>{const v0=r.cells[c.key]||0,v=crossPctMode?v0/(Object.values(r.cells).reduce((a,b)=>a+b,0)||1):v0;if(c.key==="T")maxT=Math.max(maxT,v);else if(r.own.has(c.key))maxOwn=Math.max(maxOwn,v);else maxCross=Math.max(maxCross,v);}));
   const maxPct=Math.max(1,...rows.map(r=>r.crossPct));
   rows.forEach((r,i)=>{
     const y=PAD.top+(i+1)*(BAR_H+BAR_GAP);
     cols.forEach((c,j)=>{
       const cx=x0+j*cw,v=r.cells[c.key]||0;
       const own=r.own.has(c.key),isT=c.key==="T";
-      let fill="rgba(255,255,255,0.035)",txt="#7c8296";
+      let fill="rgba(255,255,255,0.035)";
+      const iv=pctMode?v/rowTot(r):v;
       if(v>0){
-        if(isT){const a=0.15+0.55*v/(maxT||1);fill=`rgba(232,192,77,${a.toFixed(3)})`;txt=a>0.45?"#0d0e11":"#e8e3cf";}
-        else if(own){const a=0.15+0.55*v/(maxOwn||1);fill=`rgba(82,210,115,${a.toFixed(3)})`;txt=a>0.45?"#0d0e11":"#dff5e5";}
-        else{const a=0.2+0.75*v/(maxCross||1);fill=`rgba(255,92,92,${a.toFixed(3)})`;txt=a>0.5?"#0d0e11":"#ffe1e1";}
+        if(isT){const a=0.18+0.55*iv/(maxT||1);fill=`rgba(176,138,30,${a.toFixed(3)})`;}
+        else if(own){const a=0.18+0.55*iv/(maxOwn||1);fill=`rgba(40,150,70,${a.toFixed(3)})`;}
+        else{const a=0.22+0.7*iv/(maxCross||1);fill=`rgba(200,45,45,${a.toFixed(3)})`;}
       }
       ctx.fillStyle=fill;ctx.fillRect(cx+1,y,cw-2,BAR_H);
       if(own&&!isT){ctx.strokeStyle="#52d273";ctx.lineWidth=1.5;ctx.strokeRect(cx+1.75,y+0.75,cw-3.5,BAR_H-1.5);}
-      if(v>0){ctx.fillStyle=txt;ctx.font="600 10px Inter,sans-serif";ctx.textAlign="center";ctx.fillText(fmt(v),cx+cw/2,y+BAR_H/2);}
-      canvas._hoverRows.push({x:cx,y,w:cw,h:BAR_H,row:{r,col:c,name:r.name}});
+      if(v>0){ctx.save();ctx.shadowColor="rgba(0,0,0,0.65)";ctx.shadowBlur=2;ctx.fillStyle="#ffffff";ctx.font="700 10px Inter,sans-serif";ctx.textAlign="center";ctx.fillText(cellTxt(r,v),cx+cw/2,y+BAR_H/2);ctx.restore();}
+      canvas._hoverRows.push({x:cx,y,w:cw,h:BAR_H,row:{r,col:c,name:r.name,mode}});
     });
     const sx=x0+cols.length*cw+8;
     const a=0.15+0.7*r.crossPct/maxPct;
-    ctx.fillStyle=r.cross>0?`rgba(255,92,92,${a.toFixed(3)})`:"rgba(255,255,255,0.035)";ctx.fillRect(sx,y,sumW-4,BAR_H);
-    ctx.fillStyle=r.cross>0&&a>0.5?"#0d0e11":"#dde0ea";ctx.font="600 10px Inter,sans-serif";ctx.textAlign="center";
-    ctx.fillText(r.grp?`${fmt(r.cross)} · ${r.crossPct.toFixed(0)}%`:"—",sx+(sumW-4)/2,y+BAR_H/2);
-    canvas._hoverRows.push({x:sx,y,w:sumW,h:BAR_H,row:{r,col:{key:"__sum",label:"Cross total"},name:r.name}});
+    ctx.fillStyle=r.cross>0?`rgba(200,45,45,${a.toFixed(3)})`:"rgba(255,255,255,0.035)";ctx.fillRect(sx,y,sumW-4,BAR_H);
+    ctx.save();ctx.shadowColor="rgba(0,0,0,0.65)";ctx.shadowBlur=2;ctx.fillStyle="#ffffff";ctx.font="700 10px Inter,sans-serif";ctx.textAlign="center";
+    ctx.fillText(r.grp?(pctMode?`${r.crossPct.toFixed(0)}%`:`${fmt(r.cross)} · ${r.crossPct.toFixed(0)}%`):"—",sx+(sumW-4)/2,y+BAR_H/2);ctx.restore();
+    canvas._hoverRows.push({x:sx,y,w:sumW,h:BAR_H,row:{r,col:{key:"__sum",label:"Cross total"},name:r.name,mode}});
     ctx.textAlign="left";
-    drawRowLabel(ctx,(r.myN?`G${r.myN} `:"")+r.name,"Priest",PAD,y,BAR_H);
+    drawRowLabel(ctx,(r.myN?`G${r.myN} `:"")+r.name,((cachedReport.crossheal||{}).cls||{})[r.name]||"Priest",PAD,y,BAR_H);
   });
 }
 function renderCrossRenew(rolesIn){
@@ -11381,22 +12184,25 @@ function renderCrossRenew(rolesIn){
   sec.style.display="block";
   const roles=rolesIn||xhRoles(x,xhAggregate((r.allFights||[]).map(f=>f.id)));
   const num=xhGroupNumbers(x,roles);
+  const sel=document.getElementById("crossrenew-boss-sel");const bv=sel?sel.value:"all";
+  setBossOnlyTitle("boss-title-crossrenew","Bosses Only",r.bossFights||[],bv);
+  xhDrawHeat("crossrenew",crossRenewMode,roles,num,bv);
+}
+function xhDrawHeat(prefix,mode,roles,num,bv){
+  const r=cachedReport,x=r.crossheal;
   // columns G1..G8 (only those that exist) + Tanks (+ "?" if anything unplaced)
   const byN={};Object.entries(num).forEach(([gid,n])=>{(byN[n]=byN[n]||[]).push(Number(gid));});
   const memb=n=>{const out=[];(byN[n]||[]).forEach(gid=>{if(gid===XH_G7)out.push(...(roles.unplaced||[]));else out.push(...(x.groups[gid]||[]).filter(m=>!roles.tanks.has(m)));});return out.sort();};
   const subOf=n=>{if(n===1)return"Tank";if(n===7)return"Casters";const gid=(byN[n]||[])[0];const pr=(x.groups[gid]||[]).find(m=>x.cls[m]==="Priest");return pr||"";};
-  const cols=[];
+  const cols=[{key:"T",label:"Tanks",sub:"",members:[...roles.tanks].sort()}];
   for(let n=1;n<=9;n++){if(byN[n]&&(n!==7||memb(7).length))cols.push({key:"G"+n,label:n===9?"G?":"G"+n,sub:subOf(n),members:memb(n)});}
-  cols.push({key:"T",label:"Tanks",sub:"",members:[...roles.tanks].sort()});
-  const sel=document.getElementById("crossrenew-boss-sel");const bv=sel?sel.value:"all";
-  setBossOnlyTitle("boss-title-crossrenew","Bosses Only",r.bossFights||[],bv);
-  const all=crossRenewData((r.allFights||[]).map(f=>f.id),roles,num);
-  const boss=crossRenewData(healCdFightIds("boss",bv),roles,num);
-  const trash=crossRenewData(healCdFightIds("trash"),roles,num);
+  const all=crossRenewData((r.allFights||[]).map(f=>f.id),roles,num,mode);
+  const boss=crossRenewData(healCdFightIds("boss",bv),roles,num,mode);
+  const trash=crossRenewData(healCdFightIds("trash"),roles,num,mode);
   const extra=[...new Set([...all,...boss,...trash].flatMap(rw=>Object.keys(rw.cells)).filter(k=>k==="?"))];
   const cols2=extra.length?[...cols,{key:"?",label:"?",sub:"no group",members:[]}]:cols;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    drawCrossRenewCanvas("chart-crossrenew-all",all,cols2);drawCrossRenewCanvas("chart-crossrenew-boss",boss,cols2);drawCrossRenewCanvas("chart-crossrenew-trash",trash,cols2);
+    drawCrossRenewCanvas(`chart-${prefix}-all`,all,cols2,mode);drawCrossRenewCanvas(`chart-${prefix}-boss`,boss,cols2,mode);drawCrossRenewCanvas(`chart-${prefix}-trash`,trash,cols2,mode);
   }));
 }
 
@@ -11407,17 +12213,19 @@ function renderCrossRenew(rolesIn){
 // returns (both tabs then reuse that same cached request).
 let raidHead=null,raidHeadRange=null;
 const RH_TOG_KEY="encore_raidhead_toggles";
-function raidHeadToggles(){try{const v=JSON.parse(localStorage.getItem(RH_TOG_KEY)||"{}");return{comp:!!v.comp,gear:!!v.gear};}catch(e){return{comp:false,gear:false};}}
+function raidHeadToggles(){try{const v=JSON.parse(localStorage.getItem(RH_TOG_KEY)||"{}");return{comp:!!v.comp,gear:!!v.gear,tanks:!!v.tanks};}catch(e){return{comp:false,gear:false,tanks:false};}}
 function applyRaidHeadToggles(t){
   t=t||raidHeadToggles();const h=document.getElementById("raid-head");if(!h)return;
-  h.classList.toggle("show-comp",t.comp);h.classList.toggle("show-gear",t.comp&&t.gear);
+  h.classList.toggle("show-comp",t.comp);h.classList.toggle("show-gear",t.comp&&t.gear);h.classList.toggle("show-tanks",!!t.tanks);
+  const bt=document.getElementById("rh-tog-tanks");if(bt){const n=(document.getElementById("tanks-list")||{}).querySelectorAll?document.getElementById("tanks-list").querySelectorAll("span").length:0;bt.classList.toggle("on",!!t.tanks);bt.textContent=(t.tanks?"▾":"▸")+" Tanks"+(n?` (${n})`:"");bt.style.display=n?"":"none";}
   const bc=document.getElementById("rh-tog-comp"),bg=document.getElementById("rh-tog-gear");
   if(bc){bc.classList.toggle("on",t.comp);bc.textContent=(t.comp?"▾":"▸")+" Composition"+(raidHead?` (${raidHead.players.length})`:"");}
   if(bg){bg.classList.toggle("on",t.comp&&t.gear);bg.innerHTML=(t.comp&&t.gear?"▾":"▸")+" Talents, flasks &amp; gear";}
 }
 function toggleRaidHead(which){
   const t=raidHeadToggles();
-  if(which==="comp"){t.comp=!t.comp;}
+  if(which==="tanks"){t.tanks=!t.tanks;}
+  else if(which==="comp"){t.comp=!t.comp;}
   else{const on=t.comp&&t.gear;t.gear=!on;if(t.gear)t.comp=true;}
   try{localStorage.setItem(RH_TOG_KEY,JSON.stringify(t));}catch(e){}
   applyRaidHeadToggles(t);
