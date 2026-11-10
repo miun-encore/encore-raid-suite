@@ -1185,6 +1185,7 @@ document.addEventListener("click",e=>{
       </div>
       <div class="dispel-legend" id="crossheal-legend"></div>
       <div class="crossheal-groups" id="crossheal-groups"></div>
+      <div class="crossheal-groups pi-filters xh-colpick" id="crossheal-colpick"></div>
       <div class="panels">
         <div class="panel" style="cursor:default;">
           <div class="panel-title" style="margin-bottom:.5rem;">Bosses + Trash</div>
@@ -1211,6 +1212,7 @@ document.addEventListener("click",e=>{
           <button type="button" data-cr="n" class="active" onclick="setCrossRenewMode('n')">Renews</button><button type="button" data-cr="eff" onclick="setCrossRenewMode('eff')">Healing</button>
         </span>
       </div>
+      <div class="crossheal-groups pi-filters xh-colpick" id="crossrenew-colpick"></div>
       <div class="panels">
         <div class="panel" style="cursor:default;">
           <div class="panel-title" style="margin-bottom:.5rem;">Bosses + Trash</div>
@@ -11136,8 +11138,8 @@ function panelMetricFor(canvasId){
   if(canvasId==="chart-pitimeline")return"Power Infusion · priest → target, time into each boss pull";
   if(canvasId==="chart-raz")return"Mind control · priest (spell hit) → mark, duration, abilities used";
   if(canvasId.startsWith("chart-trinkets-"))return(v("trinketViewMode","all")==="pi"?"Power Infusion only":"Trinkets & Power Infusion")+(v("trinketRateMode","uses")==="upm"?" · uses per minute":"");
-  if(canvasId.startsWith("chart-crossheal-"))return"Effective healing per group · priests G2 → G8";
-  if(canvasId.startsWith("chart-crossrenew-"))return(crossRenewMode==="eff"?"Renew healing":"Renews")+" per group · priests G2 → G8";
+  if(canvasId.startsWith("chart-crossheal-"))return(typeof xhView!=="undefined"&&xhView.crossheal.view==="bars")?`Effective healing on ${xhView.crossheal.col==="T"?"Tanks":xhView.crossheal.col} · by healer`:"Effective healing per group · priests G2 → G8";
+  if(canvasId.startsWith("chart-crossrenew-"))return(typeof xhView!=="undefined"&&xhView.crossrenew.view==="bars")?`${crossRenewMode==="eff"?"Renew healing":"Renews"} on ${xhView.crossrenew.col==="T"?"Tanks":xhView.crossrenew.col} · by priest`:(crossRenewMode==="eff"?"Renew healing":"Renews")+" per group · priests G2 → G8";
   if(canvasId.startsWith("chart-healcd-"))return v("healCdMode","cds")==="fw"?"Fear Wards · cast / consumed":"Healer cooldowns";
   if(/^chart-(all|boss|trash)$/.test(canvasId))return v("ncpmMode","ncpm")==="ncasts"?"Attention Spread · nCasts × Neff":"Attention Spread · nCPM × Neff";
   if(canvasId.startsWith("chart-casts-"))return castsMode==="ncasts"?"Normalized casts (nCPM × time) · heals + dispels":"Total casts · heals + dispels";
@@ -12113,7 +12115,7 @@ function crossRenewTip(row){
   const unit=mode==="heal"?"Effective healing":mode==="eff"?"Renew healing":"Renews";
   if(row._hdr){
     let h=`<div class="ht-title">${row.col.label}${row.col.sub?` — ${row.col.sub}`:""}</div>`;
-    return h+`<div class="ht-note">${(row.col.members||[]).map(n=>htName(n,x.cls[n]||"")).join(", ")||"—"}</div>`;
+    return h+`<div class="ht-note">${(row.col.members||[]).map(n=>htName(n,x.cls[n]||"")).join(", ")||"—"}</div><div class="ht-note"><b>Click</b> to see every healer's share of this group as bars.</div>`;
   }
   const r=row.r,c=row.col;
   let h=`<div class="ht-title">${htName(r.name,"Priest")} → ${c.label}${c.sub?` (${c.sub})`:""}</div>`;
@@ -12127,6 +12129,13 @@ function crossRenewTip(row){
 function drawCrossRenewCanvas(canvasId,rows,cols,mode){
   mode=mode||crossRenewMode;
   const canvas=document.getElementById(canvasId);if(!canvas)return;
+  if(!canvas._xhHdrClick){canvas._xhHdrClick=true;
+    canvas.addEventListener("click",e=>{
+      const v=Object.keys(xhView).find(k=>canvasId.startsWith("chart-"+k+"-"));if(!v||xhView[v].view!=="table")return;
+      const rc=canvas.getBoundingClientRect(),x=e.clientX-rc.left,y=e.clientY-rc.top;
+      const h=(canvas._hoverRows||[]).find(q=>q.row&&q.row._hdr&&x>=q.x&&x<=q.x+q.w&&y>=q.y&&y<=q.y+q.h);
+      if(h){e.stopImmediatePropagation();setXhView(v,"bars",h.row.col.key);}
+    },true);}
   attachBarHover(canvasId,crossRenewTip);
   canvas._crRows=rows;canvas._crCols=cols;
   const g=makeBarCanvas(canvasId,Math.max(rows.length,1)+1);if(!g)return;
@@ -12188,6 +12197,50 @@ function renderCrossRenew(rolesIn){
   setBossOnlyTitle("boss-title-crossrenew","Bosses Only",r.bossFights||[],bv);
   xhDrawHeat("crossrenew",crossRenewMode,roles,num,bv);
 }
+// Table ⇄ bars. Bars = one group (or Tanks) at a time: every healer's
+// contribution to it as a bar growing right — green when it's their own
+// group, red when it's crosshealing, gold for tanks. Click a column header in
+// the table (or a group chip) to open it.
+var xhView={crossheal:{view:"table",col:"G1"},crossrenew:{view:"table",col:"G1"}};
+function setXhView(prefix,view,col){const v=xhView[prefix];if(view)v.view=view;if(col)v.col=col;if(col&&!view)v.view="bars";
+  if(prefix==="crossheal")renderCrossheal();else renderCrossRenew();if(typeof updatePanelMetrics==="function")updatePanelMetrics();}
+function renderXhColPick(prefix,cols){
+  const el=document.getElementById(prefix+"-colpick");if(!el)return;
+  const v=xhView[prefix];if(!cols.some(c=>c.key===v.col))v.col=(cols.find(c=>c.key!=="T")||cols[0]||{}).key;
+  const chip=(on,label,js,color)=>`<button type="button" class="pi-chip${on?" on":""}" style="color:${color||"#dde0ea"}" onclick="${js}">${label}</button>`;
+  el.innerHTML=`<div class="pi-frow"><b>View</b>${chip(v.view==="table","Table",`setXhView('${prefix}','table')`,"#e8c04d")}${chip(v.view==="bars","Bars per group",`setXhView('${prefix}','bars')`,"#e8c04d")}</div>`+
+    (v.view==="bars"?`<div class="pi-frow"><b>Group</b>${cols.map(c=>chip(v.col===c.key,c.label,`setXhView('${prefix}',null,'${c.key}')`,c.key==="T"?"#e8c04d":"#dde0ea")).join("")}</div>`:"");
+}
+function drawCrossBars(canvasId,rows,cols,mode,colKey){
+  const canvas=document.getElementById(canvasId);if(!canvas)return;
+  attachBarHover(canvasId,crossRenewTip);
+  const col=cols.find(c=>c.key===colKey)||cols[0];
+  const rowTot=r=>Object.values(r.cells).reduce((a,b)=>a+b,0)||1;
+  const val=r=>{const v=r.cells[col.key]||0;return crossPctMode?100*v/rowTot(r):v;};
+  const list=rows.filter(r=>(r.cells[col.key]||0)>0).sort((a,b)=>val(b)-val(a));
+  canvas._crRows=list;canvas._crCols=cols;
+  const g=makeBarCanvas(canvasId,Math.max(list.length,1));if(!g)return;
+  const{ctx,PAD,BAR_H,BAR_GAP,pw,W}=g;
+  canvas._hoverRows=[];
+  const isT=col.key==="T";
+  const fmt=v=>mode==="n"?String(Math.round(v)):fmtK(v);
+  const label=r=>{const v=r.cells[col.key]||0;const sh=Math.round(100*v/rowTot(r));return crossPctMode?`${sh}% of their ${mode==="n"?"renews":"healing"} · ${fmt(v)}`:`${fmt(v)} · ${sh}%`;};
+  if(!list.length){ctx.fillStyle="#585d6e";ctx.font="11px Inter,sans-serif";ctx.textAlign="left";ctx.textBaseline="middle";ctx.fillText(`Nobody ${mode==="heal"?"healed":"renewed"} ${col.label==="Tanks"?"the tanks":col.label} in this scope`,PAD.left+6,PAD.top+BAR_H/2);return;}
+  ctx.font="600 10px Inter,sans-serif";
+  const lw=Math.max(...list.map(r=>ctx.measureText(label(r)).width))+12;
+  const xMax=Math.max(...list.map(val))||1,bwMax=Math.max(40,pw-lw);
+  const cls=(cachedReport.crossheal||{}).cls||{};
+  list.forEach((r,i)=>{
+    const y=PAD.top+i*(BAR_H+BAR_GAP),own=r.own.has(col.key);
+    const c=isT?"#e8c04d":own?"#52d273":"#ff5c5c";
+    const bw=Math.max(2,val(r)/xMax*bwMax);
+    ctx.fillStyle=c+"cc";ctx.fillRect(PAD.left,y,bw,BAR_H);
+    ctx.fillStyle="#dde0ea";ctx.font="600 10px Inter,sans-serif";ctx.textAlign="left";ctx.textBaseline="middle";
+    ctx.fillText(label(r),PAD.left+bw+6,y+BAR_H/2);
+    drawRowLabel(ctx,(r.myN?`G${r.myN} `:"")+r.name,cls[r.name]||"Priest",PAD,y,BAR_H);
+    canvas._hoverRows.push({x:0,y,w:W,h:BAR_H,full:true,row:{r,col,name:r.name,mode}});
+  });
+}
 function xhDrawHeat(prefix,mode,roles,num,bv){
   const r=cachedReport,x=r.crossheal;
   // columns G1..G8 (only those that exist) + Tanks (+ "?" if anything unplaced)
@@ -12201,8 +12254,11 @@ function xhDrawHeat(prefix,mode,roles,num,bv){
   const trash=crossRenewData(healCdFightIds("trash"),roles,num,mode);
   const extra=[...new Set([...all,...boss,...trash].flatMap(rw=>Object.keys(rw.cells)).filter(k=>k==="?"))];
   const cols2=extra.length?[...cols,{key:"?",label:"?",sub:"no group",members:[]}]:cols;
+  renderXhColPick(prefix,cols2);
+  const v=xhView[prefix];
+  const draw=v.view==="bars"?(id,rows)=>drawCrossBars(id,rows,cols2,mode,v.col):(id,rows)=>drawCrossRenewCanvas(id,rows,cols2,mode);
   requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    drawCrossRenewCanvas(`chart-${prefix}-all`,all,cols2,mode);drawCrossRenewCanvas(`chart-${prefix}-boss`,boss,cols2,mode);drawCrossRenewCanvas(`chart-${prefix}-trash`,trash,cols2,mode);
+    draw(`chart-${prefix}-all`,all);draw(`chart-${prefix}-boss`,boss);draw(`chart-${prefix}-trash`,trash);
   }));
 }
 
